@@ -1,0 +1,6 @@
+@TalentoLocal_HostAddress = http://localhost:5063
+
+GET {{TalentoLocal_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
