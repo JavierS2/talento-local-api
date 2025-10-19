@@ -16,7 +16,7 @@ namespace TalentoLocal.Models
 
         public DateTime ApplicationDate { get; set; }
 
-        public string Status { get; set; } = "Pending";
+        public PostulationStatus Status { get; set; } = PostulationStatus.Pending;
 
         public string AttachedDocument { get; set; } = string.Empty;
 
