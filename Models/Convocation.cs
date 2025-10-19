@@ -13,9 +13,9 @@ namespace TalentoLocal.Models
 
         public string description { get; set; } = string.Empty;
 
-        public DateTime? createTime { get; set; }
+        public DateTime createTime { get; set; }
 
-        public DateTime? deadline { get; set; }
+        public DateTime deadline { get; set; }
 
         public ConvocationStatus state { get; set; }
 

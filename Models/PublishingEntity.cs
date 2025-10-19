@@ -7,23 +7,23 @@ namespace TalentoLocal.Models
 {
     public class PublishingEntity
     {
-        public int id { get; set; }
-        public string name { get; set;} = string.Empty;
+        public int Id { get; set; }
+        public string Name { get; set;} = string.Empty;
 
-        public EntityType type { get; set; }
+        public EntityType Type { get; set; }
 
-        public string description { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
-        public string email { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
 
-        public string phone { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
 
-        public string siteWeb { get; set; } = string.Empty;
+        public string SiteWeb { get; set; } = string.Empty;
 
-        public string address { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
 
-        public DateTime createAt { get; set; } = DateTime.UtcNow;
-        public DateTime updateAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreateAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdateAt { get; set; } = DateTime.UtcNow;
 
         // relationship with "convocatoria"
 

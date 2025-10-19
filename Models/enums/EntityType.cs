@@ -2,8 +2,8 @@
 {
     public enum EntityType
     {
-        Empresa,
-        InstitucionEducativa,
-        OrganizacionEmprendimiento
+        Company,
+        EducationalInstitution,
+        EntrepreneurshipOrganization
     }
 }
