@@ -1,5 +1,6 @@
 ﻿using System;
 using TalentoLocal.Models.enums;
+
 namespace TalentoLocal.Models
 {
     public class History
@@ -10,6 +11,10 @@ namespace TalentoLocal.Models
 
         public int ResponsibleUserId { get; set; }
 
+        // Identifica la entidad afectada (Convocation o Postulation)
+        public string ReferenceEntity { get; set; } = string.Empty;
+
+        // Id del registro afectado dentro de esa entidad
         public int ReferenceId { get; set; }
 
         public string EventDescription { get; set; } = string.Empty;
@@ -23,6 +28,6 @@ namespace TalentoLocal.Models
         public string Observations { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
     }
 }
+

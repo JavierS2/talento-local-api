@@ -25,7 +25,8 @@ namespace TalentoLocal.Models
         public DateTime CreateAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdateAt { get; set; } = DateTime.UtcNow;
 
-        // relationship with "convocatoria"
+        // relationship
+        public ICollection<Convocation> Convocations { get; set; } = new List<Convocation>();
 
     }
 }
