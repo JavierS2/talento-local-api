@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
@@ -15,44 +16,45 @@ namespace TalentoLocal.Repositories.Implementations
             _context = context;
         }
 
-        public IEnumerable<Postulation> GetAll()
+        public async Task<IEnumerable<Postulation>> GetAllAsync()
         {
-            return _context.Postulations
+            return await _context.Postulations
                 .Include(p => p.Convocation)
                 .Include(p => p.Evaluation)
-                .ToList();
+                .ToListAsync();
         }
 
-        public Postulation? GetById(int id)
+        public async Task<Postulation?> GetByIdAsync(int id)
         {
-            return _context.Postulations
+            return await _context.Postulations
                 .Include(p => p.Convocation)
                 .Include(p => p.Evaluation)
-                .FirstOrDefault(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public void Add(Postulation postulation)
+        public async Task AddAsync(Postulation postulation)
         {
-            _context.Postulations.Add(postulation);
+            await _context.Postulations.AddAsync(postulation);
         }
 
-        public void Update(Postulation postulation)
+        public Task UpdateAsync(Postulation postulation)
         {
             _context.Postulations.Update(postulation);
+            return Task.CompletedTask;
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var postulation = GetById(id);
+            var postulation = await GetByIdAsync(id);
             if (postulation != null)
             {
                 _context.Postulations.Remove(postulation);
             }
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -24,6 +24,9 @@ builder.Services.AddScoped<IPostulationService, PostulationService>();
 builder.Services.AddScoped<IHistoryService, HistoryService>();
 builder.Services.AddScoped<IPublishingEntityService, PublishingEntityService>();
 
+// Register repositories
+builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IPostulationRepository, TalentoLocal.Repositories.Implementations.PostulationRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

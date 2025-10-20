@@ -1,41 +1,41 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
+using TalentoLocal.Repositories.Interfaces;
 
 namespace TalentoLocal.Services
 {
     public class PostulationService : IPostulationService
     {
-        private readonly DbDevopsContext _db;
+        private readonly IPostulationRepository _repo;
 
-        public PostulationService(DbDevopsContext db)
+        public PostulationService(IPostulationRepository repo)
         {
-            _db = db;
+            _repo = repo;
         }
 
         public async Task<int> AddPostulationAsync(Postulation postulation)
         {
             if (postulation == null) throw new System.ArgumentNullException(nameof(postulation));
-            _db.Postulations.Add(postulation);
-            await _db.SaveChangesAsync();
+            await _repo.AddAsync(postulation);
+            await _repo.SaveAsync();
             return postulation.Id;
         }
 
         public async Task<IEnumerable<Postulation>> GetAllAsync()
         {
-            return await _db.Postulations.AsNoTracking().ToListAsync();
+            return await _repo.GetAllAsync();
         }
 
         public async Task<Postulation?> GetByIdAsync(int id)
         {
-            return await _db.Postulations.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+            return await _repo.GetByIdAsync(id);
         }
 
         public async Task<bool> UpdateAsync(int id, Postulation postulation)
         {
-            var existing = await _db.Postulations.FindAsync(id);
+            var existing = await _repo.GetByIdAsync(id);
             if (existing == null) return false;
             // Map fields
             existing.AttachedDocument = postulation.AttachedDocument;
@@ -43,17 +43,17 @@ namespace TalentoLocal.Services
             existing.ApplicationDate = postulation.ApplicationDate;
             existing.UpdatedAt = System.DateTime.UtcNow;
 
-            _db.Postulations.Update(existing);
-            await _db.SaveChangesAsync();
+            await _repo.UpdateAsync(existing);
+            await _repo.SaveAsync();
             return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var existing = await _db.Postulations.FindAsync(id);
+            var existing = await _repo.GetByIdAsync(id);
             if (existing == null) return false;
-            _db.Postulations.Remove(existing);
-            await _db.SaveChangesAsync();
+            await _repo.DeleteAsync(id);
+            await _repo.SaveAsync();
             return true;
         }
     }

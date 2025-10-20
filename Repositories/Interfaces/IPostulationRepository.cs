@@ -1,15 +1,16 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TalentoLocal.Models;
 
 namespace TalentoLocal.Repositories.Interfaces
 {
     public interface IPostulationRepository
     {
-        IEnumerable<Postulation> GetAll();
-        Postulation? GetById(int id);
-        void Add(Postulation postulation);
-        void Update(Postulation postulation);
-        void Delete(int id);
-        void Save();
+        Task<IEnumerable<Postulation>> GetAllAsync();
+        Task<Postulation?> GetByIdAsync(int id);
+        Task AddAsync(Postulation postulation);
+        Task UpdateAsync(Postulation postulation);
+        Task DeleteAsync(int id);
+        Task SaveAsync();
     }
 }
