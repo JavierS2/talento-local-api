@@ -21,7 +21,7 @@ public partial class DbDevopsContext : DbContext
     public virtual DbSet<Evaluation> Evaluations { get; set; }
     public virtual DbSet<History> Histories { get; set; }
 
-    public virtual DbSet<Postulacion> Postulaciones { get; set; }
+    public virtual DbSet<Postulation> Postulations { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Server=tcp:s-devopsg1.database.windows.net,1433;Initial Catalog=db-devops;Persist Security Info=False;User ID=cagarcias;Password=2z3KerkP8k8EfvU;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
