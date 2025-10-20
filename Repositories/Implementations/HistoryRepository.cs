@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
 
@@ -14,38 +16,39 @@ namespace TalentoLocal.Repositories.Implementations
             _context = context;
         }
 
-        public IEnumerable<History> GetAll()
+        public async Task<IEnumerable<History>> GetAllAsync()
         {
-            return _context.Histories.ToList();
+            return await _context.Histories.ToListAsync();
         }
 
-        public History? GetById(int id)
+        public async Task<History?> GetByIdAsync(int id)
         {
-            return _context.Histories.FirstOrDefault(h => h.Id == id);
+            return await _context.Histories.FirstOrDefaultAsync(h => h.Id == id);
         }
 
-        public void Add(History history)
+        public async Task AddAsync(History history)
         {
-            _context.Histories.Add(history);
+            await _context.Histories.AddAsync(history);
         }
 
-        public void Update(History history)
+        public Task UpdateAsync(History history)
         {
             _context.Histories.Update(history);
+            return Task.CompletedTask;
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var history = GetById(id);
+            var history = await GetByIdAsync(id);
             if (history != null)
             {
                 _context.Histories.Remove(history);
             }
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

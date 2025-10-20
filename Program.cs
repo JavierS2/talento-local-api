@@ -30,6 +30,7 @@ builder.Services.AddScoped<TalentoLocal.Repositories.IOfferRepository, TalentoLo
 builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IEvaluationRepository, TalentoLocal.Repositories.Implementations.EvaluationRepository>();
 builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IConvocationRepository, TalentoLocal.Repositories.Implementations.ConvocationRepository>();
 builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IPublishingEntityRepository, TalentoLocal.Repositories.Implementations.PublishingEntityRepository>();
+builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IHistoryRepository, TalentoLocal.Repositories.Implementations.HistoryRepository>();
 
 var app = builder.Build();
 

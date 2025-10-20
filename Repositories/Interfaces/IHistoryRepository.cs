@@ -1,15 +1,16 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TalentoLocal.Models;
 
 namespace TalentoLocal.Repositories.Interfaces
 {
     public interface IHistoryRepository
     {
-        IEnumerable<History> GetAll();
-        History? GetById(int id);
-        void Add(History history);
-        void Update(History history);
-        void Delete(int id);
-        void Save();
+        Task<IEnumerable<History>> GetAllAsync();
+        Task<History?> GetByIdAsync(int id);
+        Task AddAsync(History history);
+        Task UpdateAsync(History history);
+        Task DeleteAsync(int id);
+        Task SaveAsync();
     }
 }
