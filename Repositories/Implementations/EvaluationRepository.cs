@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
@@ -15,42 +16,43 @@ namespace TalentoLocal.Repositories.Implementations
             _context = context;
         }
 
-        public IEnumerable<Evaluation> GetAll()
+        public async Task<IEnumerable<Evaluation>> GetAllAsync()
         {
-            return _context.Evaluations
+            return await _context.Evaluations
                 .Include(e => e.Postulation)
-                .ToList();
+                .ToListAsync();
         }
 
-        public Evaluation? GetById(int id)
+        public async Task<Evaluation?> GetByIdAsync(int id)
         {
-            return _context.Evaluations
+            return await _context.Evaluations
                 .Include(e => e.Postulation)
-                .FirstOrDefault(e => e.Id == id);
+                .FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public void Add(Evaluation evaluation)
+        public async Task AddAsync(Evaluation evaluation)
         {
-            _context.Evaluations.Add(evaluation);
+            await _context.Evaluations.AddAsync(evaluation);
         }
 
-        public void Update(Evaluation evaluation)
+        public Task UpdateAsync(Evaluation evaluation)
         {
             _context.Evaluations.Update(evaluation);
+            return Task.CompletedTask;
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var evaluation = GetById(id);
+            var evaluation = await GetByIdAsync(id);
             if (evaluation != null)
             {
                 _context.Evaluations.Remove(evaluation);
             }
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

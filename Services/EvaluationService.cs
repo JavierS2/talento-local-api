@@ -1,46 +1,47 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Models.enums;
 using TalentoLocal.Services.Interfaces;
+using TalentoLocal.Repositories.Interfaces;
 
 namespace TalentoLocal.Services
 {
 	public class EvaluationService : IEvaluationService
 	{
-		private readonly DbDevopsContext _db;
+		private readonly IEvaluationRepository _repo;
 
-		public EvaluationService(DbDevopsContext db)
+		public EvaluationService(IEvaluationRepository repo)
 		{
-			_db = db;
+			_repo = repo;
 		}
 
 		public async Task<int> AddEvaluationAsync(Evaluation evaluation)
 		{
 			if (evaluation == null) throw new System.ArgumentNullException(nameof(evaluation));
-			_db.Evaluations.Add(evaluation);
-			await _db.SaveChangesAsync();
+			await _repo.AddAsync(evaluation);
+			await _repo.SaveAsync();
 			return evaluation.Id;
 		}
 
 		public async Task<IEnumerable<Evaluation>> GetAllAsync()
 		{
-			return await _db.Evaluations
-				.AsNoTracking()
-				.ToListAsync();
+			return await _repo.GetAllAsync();
 		}
 
 		public async Task<Evaluation?> GetByStatusAsync(EvaluationStatus status)
 		{
-			return await _db.Evaluations
-				.AsNoTracking()
-				.FirstOrDefaultAsync(e => e.Status == status);
+			var all = await _repo.GetAllAsync();
+			foreach (var e in all)
+			{
+				if (e.Status == status) return e;
+			}
+			return null;
 		}
 
 		public async Task<bool> UpdateAsync(int id, Evaluation evaluation)
 		{
-			var existing = await _db.Evaluations.FindAsync(id);
+			var existing = await _repo.GetByIdAsync(id);
 			if (existing == null) return false;
 
 			// Map fields (partial mapping; extend as needed)
@@ -51,17 +52,17 @@ namespace TalentoLocal.Services
 			existing.Status = evaluation.Status;
 			existing.UpdatedAt = System.DateTime.UtcNow;
 
-			_db.Evaluations.Update(existing);
-			await _db.SaveChangesAsync();
+			await _repo.UpdateAsync(existing);
+			await _repo.SaveAsync();
 			return true;
 		}
 
 		public async Task<bool> DeleteAsync(int id)
 		{
-			var existing = await _db.Evaluations.FindAsync(id);
+			var existing = await _repo.GetByIdAsync(id);
 			if (existing == null) return false;
-			_db.Evaluations.Remove(existing);
-			await _db.SaveChangesAsync();
+			await _repo.DeleteAsync(id);
+			await _repo.SaveAsync();
 			return true;
 		}
 	}
