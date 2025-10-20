@@ -1,71 +1,45 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TalentoLocal.Models;
 using TalentoLocal.Models.enums;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using TalentoLocal.Services.Interfaces;
 
 namespace TalentoLocal.Controllers
 {
-    [Route("evaluationapi/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class EvaluationController : ControllerBase
     {
-        String IEvaluationService = "_evaluationService"; // Tipo: InterfaceEvaluationService
-        String _evaluationService = "";
-        public EvaluationController() 
+        private readonly IEvaluationService _evaluationService;
+
+        public EvaluationController(IEvaluationService evaluationService)
         {
-            _evaluationService = "evaluationService";
+            _evaluationService = evaluationService;
         }
 
         [HttpPost]
         public async Task<ActionResult<int>> Create([FromBody] Evaluation evaluation)
         {
-            try
-            {
-                if (evaluation == null)
-                {
-                    return BadRequest("Data isn't null");
-                }
+            if (evaluation == null) return BadRequest("Body is null");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-                var evaluationId = await _evaluationService.addEvaluation(evaluation);
-                return CreatedAtAction(nameof(GetById), new { id = evaluationId }, new { id = evaluationId });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var evaluationId = await _evaluationService.AddEvaluationAsync(evaluation);
+            return CreatedAtAction(nameof(GetByStatus), new { status = evaluation.Status }, new { id = evaluationId });
         }
 
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
-            try
-            {
-                var evaluation = await _evaluationService.GetAll();
-                return Ok(evaluation);
-            }
-            catch (Exception er)
-            {
-                return StatusCode(500, $"Error interno: {er.Message}");
-            }
+            var evaluation = await _evaluationService.GetAllAsync();
+            return Ok(evaluation);
         }
 
         [HttpGet("{status}")]
         public async Task<ActionResult<Evaluation>> GetByStatus(EvaluationStatus status)
         {
-            try
-            {
-                return Ok(await _evaluationService.getByStatus(status));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
+            var ev = await _evaluationService.GetByStatusAsync(status);
+            if (ev == null) return NotFound();
+            return Ok(ev);
         }
-
-
-
-
     }
 }
