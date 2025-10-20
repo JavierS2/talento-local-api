@@ -31,7 +31,5 @@ namespace TalentoLocal.Models
 
         // relationship with evaluation
         public Evaluation? Evaluation { get; set; }
-
-
     }
 }
