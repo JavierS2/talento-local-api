@@ -1,15 +1,20 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TalentoLocal.Models;
+using TalentoLocal.Models.enums;
 
 namespace TalentoLocal.Repositories.Interfaces
 {
     public interface IConvocationRepository
     {
-        IEnumerable<Convocation> GetAll();
-        Convocation? GetById(int id);
-        void Add(Convocation convocation);
-        void Update(Convocation convocation);
-        void Delete(int id);
-        void Save();
+        Task<IEnumerable<Convocation>> GetAllAsync();
+        Task<Convocation?> GetByIdAsync(int id);
+        Task<Convocation?> GetByStatusAsync(ConvocationStatus status);
+        Task<IEnumerable<Convocation>> SearchByLocationAsync(string location);
+        Task<IEnumerable<Convocation>> SearchByAvailablePlacesAsync(int minAvailablePlaces);
+        Task AddAsync(Convocation convocation);
+        Task UpdateAsync(Convocation convocation);
+        Task DeleteAsync(int id);
+        Task SaveAsync();
     }
 }

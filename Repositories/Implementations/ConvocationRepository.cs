@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
+using TalentoLocal.Models.enums;
 using TalentoLocal.Repositories.Interfaces;
 
 namespace TalentoLocal.Repositories.Implementations
@@ -15,48 +17,74 @@ namespace TalentoLocal.Repositories.Implementations
             _context = context;
         }
 
-        public IEnumerable<Convocation> GetAll()
+        public async Task<IEnumerable<Convocation>> GetAllAsync()
         {
-            return _context.Convocations
+            return await _context.Convocations
                 .Include(c => c.PublishingEntity)
                 .Include(c => c.Offers)
                 .Include(c => c.Postulations)
                 .Include(c => c.Histories)
-                .ToList();
+                .ToListAsync();
         }
 
-        public Convocation? GetById(int id)
+        public async Task<Convocation?> GetByIdAsync(int id)
         {
-            return _context.Convocations
+            return await _context.Convocations
                 .Include(c => c.PublishingEntity)
                 .Include(c => c.Offers)
                 .Include(c => c.Postulations)
                 .Include(c => c.Histories)
-                .FirstOrDefault(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public void Add(Convocation convocation)
+        public async Task<Convocation?> GetByStatusAsync(ConvocationStatus status)
         {
-            _context.Convocations.Add(convocation);
+            return await _context.Convocations
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.State == status);
         }
 
-        public void Update(Convocation convocation)
+        public async Task<IEnumerable<Convocation>> SearchByLocationAsync(string location)
+        {
+            if (string.IsNullOrWhiteSpace(location)) return new List<Convocation>();
+            var pattern = location.Trim().ToLower();
+            return await _context.Convocations
+                .Where(c => c.Location.ToLower().Contains(pattern))
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Convocation>> SearchByAvailablePlacesAsync(int minAvailablePlaces)
+        {
+            return await _context.Convocations
+                .Where(c => c.AvailablePlaces >= minAvailablePlaces)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task AddAsync(Convocation convocation)
+        {
+            await _context.Convocations.AddAsync(convocation);
+        }
+
+        public Task UpdateAsync(Convocation convocation)
         {
             _context.Convocations.Update(convocation);
+            return Task.CompletedTask;
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var convocation = GetById(id);
+            var convocation = await GetByIdAsync(id);
             if (convocation != null)
             {
                 _context.Convocations.Remove(convocation);
             }
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

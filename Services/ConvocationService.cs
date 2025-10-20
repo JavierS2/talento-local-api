@@ -1,75 +1,58 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Models.enums;
 using TalentoLocal.Services.Interfaces;
+using TalentoLocal.Repositories.Interfaces;
 
 namespace TalentoLocal.Services
 {
     public class ConvocationService : IConvocationService
     {
-        private readonly DbDevopsContext _db;
+        private readonly IConvocationRepository _repo;
 
-        public ConvocationService(DbDevopsContext db)
+        public ConvocationService(IConvocationRepository repo)
         {
-            _db = db;
+            _repo = repo;
         }
 
         public async Task<int> AddConvocationAsync(Convocation convocation)
         {
             if (convocation == null) throw new System.ArgumentNullException(nameof(convocation));
-            _db.Convocations.Add(convocation);
-            await _db.SaveChangesAsync();
+            await _repo.AddAsync(convocation);
+            await _repo.SaveAsync();
             return convocation.Id;
         }
 
         public async Task<IEnumerable<Convocation>> GetAllAsync()
         {
-            return await _db.Convocations
-                .Include(c => c.PublishingEntity)
-                .AsNoTracking()
-                .ToListAsync();
+            return await _repo.GetAllAsync();
         }
 
         public async Task<Convocation?> GetByIdAsync(int id)
         {
-            return await _db.Convocations
-                .Include(c => c.PublishingEntity)
-                .Include(c => c.Offers)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Id == id);
+            return await _repo.GetByIdAsync(id);
         }
 
         public async Task<Convocation?> GetByStatusAsync(ConvocationStatus status)
         {
-            return await _db.Convocations
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.State == status);
+            return await _repo.GetByStatusAsync(status);
         }
 
         public async Task<IEnumerable<Convocation>> SearchByLocationAsync(string location)
         {
-            if (string.IsNullOrWhiteSpace(location)) return new List<Convocation>();
-            var pattern = location.Trim().ToLower();
-            return await _db.Convocations
-                .Where(c => c.Location.ToLower().Contains(pattern))
-                .AsNoTracking()
-                .ToListAsync();
+            return await _repo.SearchByLocationAsync(location);
         }
 
         public async Task<IEnumerable<Convocation>> SearchByAvailablePlacesAsync(int minAvailablePlaces)
         {
-            return await _db.Convocations
-                .Where(c => c.AvailablePlaces >= minAvailablePlaces)
-                .AsNoTracking()
-                .ToListAsync();
+            return await _repo.SearchByAvailablePlacesAsync(minAvailablePlaces);
         }
 
         public async Task<Convocation?> UpdateAsync(int id, Convocation convocation)
         {
-            var existing = await _db.Convocations.FindAsync(id);
+            var existing = await _repo.GetByIdAsync(id);
             if (existing == null) return null;
 
             // map fields (simple mapping)
@@ -83,17 +66,17 @@ namespace TalentoLocal.Services
             existing.Requirements = convocation.Requirements;
             existing.UpdatedAt = System.DateTime.UtcNow;
 
-            _db.Convocations.Update(existing);
-            await _db.SaveChangesAsync();
+            await _repo.UpdateAsync(existing);
+            await _repo.SaveAsync();
             return existing;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var existing = await _db.Convocations.FindAsync(id);
+            var existing = await _repo.GetByIdAsync(id);
             if (existing == null) return false;
-            _db.Convocations.Remove(existing);
-            await _db.SaveChangesAsync();
+            await _repo.DeleteAsync(id);
+            await _repo.SaveAsync();
             return true;
         }
     }

@@ -28,6 +28,7 @@ builder.Services.AddScoped<IPublishingEntityService, PublishingEntityService>();
 builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IPostulationRepository, TalentoLocal.Repositories.Implementations.PostulationRepository>();
 builder.Services.AddScoped<TalentoLocal.Repositories.IOfferRepository, TalentoLocal.Repositories.OfferRepository>();
 builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IEvaluationRepository, TalentoLocal.Repositories.Implementations.EvaluationRepository>();
+builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IConvocationRepository, TalentoLocal.Repositories.Implementations.ConvocationRepository>();
 
 var app = builder.Build();
 
