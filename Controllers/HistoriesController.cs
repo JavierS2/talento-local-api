@@ -1,4 +1,3 @@
-﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
@@ -7,11 +6,11 @@ namespace TalentoLocal.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HistoryController : ControllerBase
+    public class HistoriesController : ControllerBase
     {
         private readonly IHistoryService _historyService;
 
-        public HistoryController(IHistoryService historyService)
+        public HistoriesController(IHistoryService historyService)
         {
             _historyService = historyService;
         }

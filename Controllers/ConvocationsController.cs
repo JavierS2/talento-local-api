@@ -1,18 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace TalentoLocal.Controllers
 {
-    [Route("convocationapi/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class ConvocationController : ControllerBase
+    public class ConvocationsController : ControllerBase
     {
         private readonly IConvocationService _convocationService;
 
-        public ConvocationController(IConvocationService convocationService)
+        public ConvocationsController(IConvocationService convocationService)
         {
             _convocationService = convocationService;
         }

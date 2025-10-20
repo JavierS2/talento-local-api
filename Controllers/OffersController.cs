@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
 
 namespace TalentoLocal.Controllers
 {
-    [Route("offerapi/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class OfferController : ControllerBase
+    public class OffersController : ControllerBase
     {
         private readonly IOfferService _offerService;
 
-        public OfferController(IOfferService offerService)
+        public OffersController(IOfferService offerService)
         {
             _offerService = offerService;
         }

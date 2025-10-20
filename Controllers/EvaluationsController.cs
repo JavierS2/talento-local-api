@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TalentoLocal.Models;
 using TalentoLocal.Models.enums;
 using TalentoLocal.Services.Interfaces;
@@ -7,11 +7,11 @@ namespace TalentoLocal.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EvaluationController : ControllerBase
+    public class EvaluationsController : ControllerBase
     {
         private readonly IEvaluationService _evaluationService;
 
-        public EvaluationController(IEvaluationService evaluationService)
+        public EvaluationsController(IEvaluationService evaluationService)
         {
             _evaluationService = evaluationService;
         }

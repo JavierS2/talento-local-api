@@ -1,4 +1,3 @@
-﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
@@ -7,11 +6,11 @@ namespace TalentoLocal.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PublishingEntityController : ControllerBase
+    public class PublishingEntitiesController : ControllerBase
     {
         private readonly IPublishingEntityService _publishingEntityService;
 
-        public PublishingEntityController(IPublishingEntityService publishingEntityService)
+        public PublishingEntitiesController(IPublishingEntityService publishingEntityService)
         {
             _publishingEntityService = publishingEntityService;
         }

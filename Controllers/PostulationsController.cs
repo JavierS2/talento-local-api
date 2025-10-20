@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
 
 namespace TalentoLocal.Controllers
 {
-    [Route("postulationapi/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class PostulationController : ControllerBase
+    public class PostulationsController : ControllerBase
     {
         private readonly IPostulationService _postulationService;
 
-        public PostulationController(IPostulationService postulationService)
+        public PostulationsController(IPostulationService postulationService)
         {
             _postulationService = postulationService;
         }
