@@ -26,7 +26,7 @@ builder.Services.AddScoped<IPublishingEntityService, PublishingEntityService>();
 
 // Register repositories
 builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IPostulationRepository, TalentoLocal.Repositories.Implementations.PostulationRepository>();
-builder.Services.AddScoped<TalentoLocal.Repositories.IOfferRepository, TalentoLocal.Repositories.OfferRepository>();
+builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IOfferRepository, TalentoLocal.Repositories.Implementations.OfferRepository>();
 builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IEvaluationRepository, TalentoLocal.Repositories.Implementations.EvaluationRepository>();
 builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IConvocationRepository, TalentoLocal.Repositories.Implementations.ConvocationRepository>();
 builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IPublishingEntityRepository, TalentoLocal.Repositories.Implementations.PublishingEntityRepository>();

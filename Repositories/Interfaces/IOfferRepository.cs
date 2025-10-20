@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using TalentoLocal.Models;
 
-namespace TalentoLocal.Repositories
+namespace TalentoLocal.Repositories.Interfaces
 {
     public interface IOfferRepository
     {

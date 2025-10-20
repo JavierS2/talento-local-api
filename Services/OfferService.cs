@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
-using TalentoLocal.Repositories;
+using TalentoLocal.Repositories.Interfaces;
 
 namespace TalentoLocal.Services
 {

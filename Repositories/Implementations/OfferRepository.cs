@@ -3,9 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
-using TalentoLocal.Repositories;
-
-namespace TalentoLocal.Repositories
+using TalentoLocal.Repositories.Interfaces;
+namespace TalentoLocal.Repositories.Implementations
 {
     public class OfferRepository : IOfferRepository
     {
