@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
+using TalentoLocal.Repositories;
 
 namespace TalentoLocal.Repositories
 {
@@ -13,38 +16,39 @@ namespace TalentoLocal.Repositories
             _context = context;
         }
 
-        public IEnumerable<Offer> GetAll()
+        public async Task<IEnumerable<Offer>> GetAllAsync()
         {
-            return _context.Offers.ToList();
+            return await _context.Offers.ToListAsync();
         }
 
-        public Offer? GetById(int id)
+        public async Task<Offer?> GetByIdAsync(int id)
         {
-            return _context.Offers.FirstOrDefault(o => o.Id == id);
+            return await _context.Offers.FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        public void Add(Offer offer)
+        public async Task AddAsync(Offer offer)
         {
-            _context.Offers.Add(offer);
+            await _context.Offers.AddAsync(offer);
         }
 
-        public void Update(Offer offer)
+        public Task UpdateAsync(Offer offer)
         {
             _context.Offers.Update(offer);
+            return Task.CompletedTask;
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var offer = GetById(id);
+            var offer = await GetByIdAsync(id);
             if (offer != null)
             {
                 _context.Offers.Remove(offer);
             }
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

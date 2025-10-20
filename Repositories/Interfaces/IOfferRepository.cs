@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using TalentoLocal.Models;
 
 namespace TalentoLocal.Repositories
 {
     public interface IOfferRepository
     {
-        IEnumerable<Offer> GetAll();
-        Offer? GetById(int id);
-        void Add(Offer offer);
-        void Update(Offer offer);
-        void Delete(int id);
-        void Save();
+        Task<IEnumerable<Offer>> GetAllAsync();
+        Task<Offer?> GetByIdAsync(int id);
+        Task AddAsync(Offer offer);
+        Task UpdateAsync(Offer offer);
+        Task DeleteAsync(int id);
+        Task SaveAsync();
     }
 }

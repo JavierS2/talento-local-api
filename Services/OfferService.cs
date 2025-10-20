@@ -1,47 +1,41 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
+using TalentoLocal.Repositories;
 
 namespace TalentoLocal.Services
 {
     public class OfferService : IOfferService
     {
-        private readonly DbDevopsContext _db;
+        private readonly IOfferRepository _repo;
 
-        public OfferService(DbDevopsContext db)
+        public OfferService(IOfferRepository repo)
         {
-            _db = db;
+            _repo = repo;
         }
 
         public async Task<int> AddOfferAsync(Offer offer)
         {
             if (offer == null) throw new System.ArgumentNullException(nameof(offer));
-            _db.Offers.Add(offer);
-            await _db.SaveChangesAsync();
+            await _repo.AddAsync(offer);
+            await _repo.SaveAsync();
             return offer.Id;
         }
 
         public async Task<IEnumerable<Offer>> GetAllAsync()
         {
-            return await _db.Offers
-                .Include(o => o.Convocation)
-                .AsNoTracking()
-                .ToListAsync();
+            return await _repo.GetAllAsync();
         }
 
         public async Task<Offer?> GetByIdAsync(int id)
         {
-            return await _db.Offers
-                .Include(o => o.Convocation)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(o => o.Id == id);
+            return await _repo.GetByIdAsync(id);
         }
 
         public async Task<bool> UpdateAsync(int id, Offer offer)
         {
-            var existing = await _db.Offers.FindAsync(id);
+            var existing = await _repo.GetByIdAsync(id);
             if (existing == null) return false;
 
             existing.Name = offer.Name;
@@ -54,17 +48,17 @@ namespace TalentoLocal.Services
             existing.EndDate = offer.EndDate;
             existing.UpdatedAt = System.DateTime.UtcNow;
 
-            _db.Offers.Update(existing);
-            await _db.SaveChangesAsync();
+            await _repo.UpdateAsync(existing);
+            await _repo.SaveAsync();
             return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var existing = await _db.Offers.FindAsync(id);
+            var existing = await _repo.GetByIdAsync(id);
             if (existing == null) return false;
-            _db.Offers.Remove(existing);
-            await _db.SaveChangesAsync();
+            await _repo.DeleteAsync(id);
+            await _repo.SaveAsync();
             return true;
         }
     }
