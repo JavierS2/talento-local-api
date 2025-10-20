@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TalentoLocal.Models;
+using TalentoLocal.Services.Interfaces;
 
 namespace TalentoLocal.Controllers
 {
@@ -8,80 +9,45 @@ namespace TalentoLocal.Controllers
     [ApiController]
     public class OfferController : ControllerBase
     {
-        String _offerService = "";
+        private readonly IOfferService _offerService;
 
-        public OfferController()
+        public OfferController(IOfferService offerService)
         {
-            _offerService = "offerService";
+            _offerService = offerService;
         }
 
         [HttpPost]
         public async Task<ActionResult<int>> Create([FromBody] Offer offer)
         {
-            try
-            {
-                if (offer == null)
-                {
-                    return BadRequest("Data isn't null");
-                }
+            if (offer == null) return BadRequest("Body is null");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-                var offerId = await _offerService.addOffer(offer);
-                return CreatedAtAction(nameof(GetById), new { id = offerId }, new { id = offerId });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var offerId = await _offerService.AddOfferAsync(offer);
+            return CreatedAtAction(nameof(GetById), new { id = offerId }, new { id = offerId });
         }
 
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
-            try
-            {
-                var offer = await _offerService.GetAll();
-                return Ok(offer);
-
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error: {ex.Message}");
-            }
+            var offer = await _offerService.GetAllAsync();
+            return Ok(offer);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Offer>> GetById(int id)
         {
-            try
-            {
-                return Ok(await _offerService.GetById(id));
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error get postulation:", ex.Message);
-                return null;
-            }
+            var result = await _offerService.GetByIdAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
-
         [HttpPut("{id}")]
-        public async Task<ActionResult<Offer>> Updated (int id, Offer offer)
+        public async Task<ActionResult<Offer>> Updated(int id, Offer offer)
         {
-            if (offer == null)
-            {
-                return BadRequest("Data isn't null");
+            if (offer == null) return BadRequest("Body is null");
 
-            }
-            try
-            {
-                bool updated = await _offerService.Updated(id, offer);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error updating: ", ex.Message);
-                return null;
-            }
+            var updated = await _offerService.UpdateAsync(id, offer);
+            return updated ? NoContent() : NotFound();
         }
     }
 }

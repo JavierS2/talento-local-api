@@ -19,6 +19,7 @@ builder.Services.AddDbContext<DbDevopsContext>(options =>
 // Register services
 builder.Services.AddScoped<IEvaluationService, EvaluationService>();
 builder.Services.AddScoped<IConvocationService, ConvocationService>();
+builder.Services.AddScoped<IOfferService, OfferService>();
 
 var app = builder.Build();
 
