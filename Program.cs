@@ -1,13 +1,41 @@
 using Microsoft.EntityFrameworkCore;
+using TalentoLocal.Models;
+using TalentoLocal.Services;
+using TalentoLocal.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(opts =>
+    {
+        // Serialize enums as their string names instead of numeric values
+        opts.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register DbContext using InMemory for local development/tests
+builder.Services.AddDbContext<DbDevopsContext>(options =>
+    options.UseInMemoryDatabase("TalentoLocalInMemory"));
+
+// Register services
+builder.Services.AddScoped<IEvaluationService, EvaluationService>();
+builder.Services.AddScoped<IConvocationService, ConvocationService>();
+builder.Services.AddScoped<IOfferService, OfferService>();
+builder.Services.AddScoped<IPostulationService, PostulationService>();
+builder.Services.AddScoped<IHistoryService, HistoryService>();
+builder.Services.AddScoped<IPublishingEntityService, PublishingEntityService>();
+
+// Register repositories
+builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IPostulationRepository, TalentoLocal.Repositories.Implementations.PostulationRepository>();
+builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IOfferRepository, TalentoLocal.Repositories.Implementations.OfferRepository>();
+builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IEvaluationRepository, TalentoLocal.Repositories.Implementations.EvaluationRepository>();
+builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IConvocationRepository, TalentoLocal.Repositories.Implementations.ConvocationRepository>();
+builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IPublishingEntityRepository, TalentoLocal.Repositories.Implementations.PublishingEntityRepository>();
+builder.Services.AddScoped<TalentoLocal.Repositories.Interfaces.IHistoryRepository, TalentoLocal.Repositories.Implementations.HistoryRepository>();
 
 var app = builder.Build();
 
