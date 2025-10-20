@@ -65,5 +65,13 @@ namespace TalentoLocal.Controllers
             var convocation = await _convocationService.SearchByAvailablePlacesAsync(minAvailablePlaces);
             return Ok(convocation);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _convocationService.DeleteAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
+        }
     }
 }

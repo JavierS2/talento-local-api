@@ -10,5 +10,6 @@ namespace TalentoLocal.Services.Interfaces
         Task<IEnumerable<History>> GetAllAsync();
         Task<History?> GetByIdAsync(int id);
         Task<bool> UpdateAsync(int id, History history);
+        Task<bool> DeleteAsync(int id);
     }
 }

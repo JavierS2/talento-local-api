@@ -11,5 +11,6 @@ namespace TalentoLocal.Services.Interfaces
 		Task<IEnumerable<Evaluation>> GetAllAsync();
 		Task<Evaluation?> GetByStatusAsync(EvaluationStatus status);
 		Task<bool> UpdateAsync(int id, Evaluation evaluation);
+		Task<bool> DeleteAsync(int id);
 	}
 }

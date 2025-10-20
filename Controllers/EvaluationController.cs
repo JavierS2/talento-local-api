@@ -40,5 +40,13 @@ namespace TalentoLocal.Controllers
             if (ev == null) return NotFound();
             return Ok(ev);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _evaluationService.DeleteAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
+        }
     }
 }

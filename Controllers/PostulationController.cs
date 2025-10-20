@@ -49,5 +49,13 @@ namespace TalentoLocal.Controllers
             var updated = await _postulationService.UpdateAsync(id, postulation);
             return updated ? NoContent() : NotFound();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _postulationService.DeleteAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
+        }
     }
 }

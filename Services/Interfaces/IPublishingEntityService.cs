@@ -10,5 +10,6 @@ namespace TalentoLocal.Services.Interfaces
         Task<IEnumerable<PublishingEntity>> GetAllAsync();
         Task<PublishingEntity?> GetByIdAsync(int id);
         Task<bool> UpdateAsync(int id, PublishingEntity publishingEntity);
+        Task<bool> DeleteAsync(int id);
     }
 }

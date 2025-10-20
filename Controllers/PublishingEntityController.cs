@@ -85,5 +85,13 @@ namespace TalentoLocal.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _publishingEntityService.DeleteAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
+        }
     }
 }

@@ -14,5 +14,6 @@ namespace TalentoLocal.Services.Interfaces
         Task<IEnumerable<Convocation>> SearchByLocationAsync(string location);
         Task<IEnumerable<Convocation>> SearchByAvailablePlacesAsync(int minAvailablePlaces);
         Task<Convocation?> UpdateAsync(int id, Convocation convocation);
+        Task<bool> DeleteAsync(int id);
     }
 }

@@ -54,5 +54,14 @@ namespace TalentoLocal.Services
             await _db.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var existing = await _db.PublishingEntities.FindAsync(id);
+            if (existing == null) return false;
+            _db.PublishingEntities.Remove(existing);
+            await _db.SaveChangesAsync();
+            return true;
+        }
     }
 }
