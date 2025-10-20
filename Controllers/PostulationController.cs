@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TalentoLocal.Models;
+using TalentoLocal.Services.Interfaces;
 
 namespace TalentoLocal.Controllers
 {
@@ -8,77 +9,45 @@ namespace TalentoLocal.Controllers
     [ApiController]
     public class PostulationController : ControllerBase
     {
-        String _postulationService = "";
+        private readonly IPostulationService _postulationService;
 
-        public PostulationController()
+        public PostulationController(IPostulationService postulationService)
         {
-            _postulationService = "postulationService";
+            _postulationService = postulationService;
         }
 
         [HttpPost]
-        public async Task<ActionResult<int>> Create([FromBody] Postulacion postulation)
+        public async Task<ActionResult<int>> Create([FromBody] Postulation postulation)
         {
-            try
-            {
-                if (postulation == null)
-                {
-                    return BadRequest("Data isn't null");
-                }
+            if (postulation == null) return BadRequest("Body is null");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-                var postulationId = await _postulationService.addPostulation(postulation);
-                return CreatedAtAction(nameof(GetById), new { id = postulationId }, new { id = postulationId });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var postulationId = await _postulationService.AddPostulationAsync(postulation);
+            return CreatedAtAction(nameof(GetById), new { id = postulationId }, new { id = postulationId });
         }
 
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
-            try
-            {
-                var postulation = await _postulationService.GetAll();
-                return Ok(postulation);
-
-            } catch (Exception ex)
-            {
-                return StatusCode(500, $"Error: {ex.Message}");
-            }
+            var postulation = await _postulationService.GetAllAsync();
+            return Ok(postulation);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Postulacion>> GetById(int id)
+        public async Task<ActionResult<Postulation>> GetById(int id)
         {
-            try
-            {
-                return Ok(await _postulationService.GetById(id));
-
-            } catch (Exception ex)
-            {
-                Console.WriteLine("Error get postulation:", ex.Message);
-                return null;
-            }
+            var result = await _postulationService.GetByIdAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Postulation>> Updated(int id, Postulation postulation)
         {
-            if (postulation == null)
-            {
-                return BadRequest("Data isn't null");
+            if (postulation == null) return BadRequest("Body is null");
 
-            }
-            try
-            {
-                bool updated = await _postulationService.Updated(id, postulation);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error updating: ", ex.Message);
-                return null;
-            }
+            var updated = await _postulationService.UpdateAsync(id, postulation);
+            return updated ? NoContent() : NotFound();
         }
     }
 }
