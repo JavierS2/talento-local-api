@@ -22,6 +22,7 @@ builder.Services.AddScoped<IConvocationService, ConvocationService>();
 builder.Services.AddScoped<IOfferService, OfferService>();
 builder.Services.AddScoped<IPostulationService, PostulationService>();
 builder.Services.AddScoped<IHistoryService, HistoryService>();
+builder.Services.AddScoped<IPublishingEntityService, PublishingEntityService>();
 
 var app = builder.Build();
 
