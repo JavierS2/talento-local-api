@@ -1,15 +1,16 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TalentoLocal.Models;
 
 namespace TalentoLocal.Repositories.Interfaces
 {
 	public interface IPublishingEntityRepository
 	{
-		IEnumerable<PublishingEntity> GetAll();
-		PublishingEntity? GetById(int id);
-		void Add(PublishingEntity publishingEntity);
-		void Update(PublishingEntity publishingEntity);
-		void Delete(int id);
-		void Save();
+		Task<IEnumerable<PublishingEntity>> GetAllAsync();
+		Task<PublishingEntity?> GetByIdAsync(int id);
+		Task AddAsync(PublishingEntity publishingEntity);
+		Task UpdateAsync(PublishingEntity publishingEntity);
+		Task DeleteAsync(int id);
+		Task SaveAsync();
 	}
 }

@@ -1,44 +1,40 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
+using TalentoLocal.Repositories.Interfaces;
 
 namespace TalentoLocal.Services
 {
     public class PublishingEntityService : IPublishingEntityService
     {
-        private readonly DbDevopsContext _db;
+        private readonly IPublishingEntityRepository _repo;
 
-        public PublishingEntityService(DbDevopsContext db)
+        public PublishingEntityService(IPublishingEntityRepository repo)
         {
-            _db = db;
+            _repo = repo;
         }
 
         public async Task<int> AddPublishingEntityAsync(PublishingEntity publishingEntity)
         {
-            _db.PublishingEntities.Add(publishingEntity);
-            await _db.SaveChangesAsync();
+            await _repo.AddAsync(publishingEntity);
+            await _repo.SaveAsync();
             return publishingEntity.Id;
         }
 
         public async Task<IEnumerable<PublishingEntity>> GetAllAsync()
         {
-            return await _db.PublishingEntities
-                .AsNoTracking()
-                .ToListAsync();
+            return await _repo.GetAllAsync();
         }
 
         public async Task<PublishingEntity?> GetByIdAsync(int id)
         {
-            return await _db.PublishingEntities
-                .AsNoTracking()
-                .FirstOrDefaultAsync(pe => pe.Id == id);
+            return await _repo.GetByIdAsync(id);
         }
 
         public async Task<bool> UpdateAsync(int id, PublishingEntity publishingEntity)
         {
-            var existing = await _db.PublishingEntities.FindAsync(id);
+            var existing = await _repo.GetByIdAsync(id);
             if (existing == null) return false;
 
             existing.Name = publishingEntity.Name;
@@ -48,19 +44,19 @@ namespace TalentoLocal.Services
             existing.Phone = publishingEntity.Phone;
             existing.SiteWeb = publishingEntity.SiteWeb;
             existing.Address = publishingEntity.Address;
-            existing.UpdateAt = DateTime.UtcNow;
+            existing.UpdateAt = System.DateTime.UtcNow;
 
-            _db.PublishingEntities.Update(existing);
-            await _db.SaveChangesAsync();
+            await _repo.UpdateAsync(existing);
+            await _repo.SaveAsync();
             return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var existing = await _db.PublishingEntities.FindAsync(id);
+            var existing = await _repo.GetByIdAsync(id);
             if (existing == null) return false;
-            _db.PublishingEntities.Remove(existing);
-            await _db.SaveChangesAsync();
+            await _repo.DeleteAsync(id);
+            await _repo.SaveAsync();
             return true;
         }
     }

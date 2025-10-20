@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
@@ -15,42 +16,43 @@ namespace TalentoLocal.Repositories.Implementations
             _context = context;
         }
 
-        public IEnumerable<PublishingEntity> GetAll()
+        public async Task<IEnumerable<PublishingEntity>> GetAllAsync()
         {
-            return _context.PublishingEntities
+            return await _context.PublishingEntities
                 .Include(pe => pe.Convocations)
-                .ToList();
+                .ToListAsync();
         }
 
-        public PublishingEntity? GetById(int id)
+        public async Task<PublishingEntity?> GetByIdAsync(int id)
         {
-            return _context.PublishingEntities
+            return await _context.PublishingEntities
                 .Include(pe => pe.Convocations)
-                .FirstOrDefault(pe => pe.Id == id);
+                .FirstOrDefaultAsync(pe => pe.Id == id);
         }
 
-        public void Add(PublishingEntity publishingEntity)
+        public async Task AddAsync(PublishingEntity publishingEntity)
         {
-            _context.PublishingEntities.Add(publishingEntity);
+            await _context.PublishingEntities.AddAsync(publishingEntity);
         }
 
-        public void Update(PublishingEntity publishingEntity)
+        public Task UpdateAsync(PublishingEntity publishingEntity)
         {
             _context.PublishingEntities.Update(publishingEntity);
+            return Task.CompletedTask;
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var entity = GetById(id);
+            var entity = await GetByIdAsync(id);
             if (entity != null)
             {
                 _context.PublishingEntities.Remove(entity);
             }
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }
