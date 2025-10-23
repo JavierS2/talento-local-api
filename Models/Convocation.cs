@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using TalentoLocal.Models.enums;
 
-
 namespace TalentoLocal.Models
 {
     public class Convocation
@@ -13,7 +12,7 @@ namespace TalentoLocal.Models
 
         public string Description { get; set; } = string.Empty;
 
-        public ConvocationStatus Type { get; set; }
+        public TypeConvocation Type { get; set; } = TypeConvocation.Employment;
 
         public DateTime PublicationDate { get; set; } = DateTime.UtcNow;
 
