@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TalentoLocal.Models;
+using TalentoLocal.Models.enums;
 using TalentoLocal.Services.Interfaces;
 
 namespace TalentoLocal.Controllers
@@ -14,6 +15,28 @@ namespace TalentoLocal.Controllers
         {
             _postulationService = postulationService;
         }
+
+        [HttpPost("Mockup")]
+        public async Task<ActionResult<int>> CreateMockup()
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            Postulation postu = new Postulation
+            {
+                ConvocationId = 1,
+                ApplicationDate = DateTime.Now,
+                Status = PostulationStatus.Pending,
+                AttachedDocument = "1234",
+                CompanyObservation = "test",
+                ReviewDate = DateTime.Now,
+                ActionHistory = "Test",
+                UserId = 1,
+            };
+
+            var postulationId = await _postulationService.AddPostulationAsync(postu);
+            return CreatedAtAction(nameof(GetById), new { id = postulationId }, new { id = postulationId });
+        }
+
 
         [HttpPost]
         public async Task<ActionResult<int>> Create([FromBody] Postulation postulation)

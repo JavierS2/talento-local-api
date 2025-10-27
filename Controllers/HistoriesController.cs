@@ -15,12 +15,33 @@ namespace TalentoLocal.Controllers
             _historyService = historyService;
         }
 
+        [HttpPost("Mockup")]
+        public async Task<ActionResult<int>> CreateMockup()
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            History his = new History
+            {
+                EventType = Models.enums.EventType.Evaluation,
+                ResponsibleUserId = 1,
+                ReferenceEntity = "Evaluation",
+                ReferenceId = 1,
+                EventDescription = "Se registró una nueva evaluación para la postulación del candidato.",
+                EventDate = DateTime.Now,
+                PreviousState = "Pending",
+                NewState = "Completed",
+                Observations = "La evaluación fue completada exitosamente sin observaciones adicionales."
+            };
+
+            var historyId = await _historyService.AddHistoryAsync(his);
+            return CreatedAtAction(nameof(GetById), new { id = historyId }, new { id = historyId });
+        }
+
         [HttpPost]
         public async Task<ActionResult<int>> Create([FromBody] History history)
         {
             if (history == null) return BadRequest("Body is null");
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
+           
             var historyId = await _historyService.AddHistoryAsync(history);
             return CreatedAtAction(nameof(GetById), new { id = historyId }, new { id = historyId });
         }

@@ -18,7 +18,7 @@ namespace TalentoLocal.Models
 
         public string Criteria { get; set; } = string.Empty;
 
-        public float Result { get; set; }
+        public double Result { get; set; }
 
         public string Comments { get; set; } = string.Empty;
 

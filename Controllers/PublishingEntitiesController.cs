@@ -15,6 +15,32 @@ namespace TalentoLocal.Controllers
             _publishingEntityService = publishingEntityService;
         }
 
+        [HttpPost("Mockup")]
+        public async Task<ActionResult<int>> CreateMockup()
+        {
+            try
+            {
+
+                PublishingEntity publ = new PublishingEntity
+                {
+                    Name = "Homecenter",
+                    Type = Models.enums.EntityType.Company,
+                    Description = "Estableimiento especializado en ofrecer una amplia variedad de productos para la mejora del hogar y la construccion",
+                    Email = "homecenter@gmail.com",
+                    Phone = " 300 123 23 22",
+                    SiteWeb = "www.homecenter.com.co",
+                    Address = "Carrera 35 # 29a-355, Santa Marta, Magdalena 470000",
+                };
+
+                var postulationId = await _publishingEntityService.AddPublishingEntityAsync(publ);
+                return CreatedAtAction(nameof(GetById), new { id = postulationId }, new { id = postulationId });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<int>> Create([FromBody] PublishingEntity publishingEntity)
         {

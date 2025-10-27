@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using TalentoLocal.Models.enums;
 
 
@@ -28,6 +29,8 @@ namespace TalentoLocal.Models
         public string Requirements { get; set; } = string.Empty;
 
         public int PublishingEntityId { get; set; }
+
+        [JsonIgnore]
         public PublishingEntity PublishingEntity { get; set; } = null!;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -36,6 +39,6 @@ namespace TalentoLocal.Models
         // 🔗 Relationships
         public ICollection<Offer> Offers { get; set; } = new List<Offer>();
         public ICollection<Postulation> Postulations { get; set; } = new List<Postulation>();
-        public ICollection<History> Histories { get; set; } = new List<History>();
+  
     }
 }

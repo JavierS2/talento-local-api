@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TalentoLocal.Models.enums;
 using TalentoLocal.Models;
+using System.Text.Json.Serialization;
 
 namespace TalentoLocal.Models
 {
@@ -11,6 +12,7 @@ namespace TalentoLocal.Models
 
         public int IdConvocation { get; set; }
 
+        [JsonIgnore]
         public Convocation Convocation { get; set; } = null!;
 
         public string Name { get; set; } = string.Empty;

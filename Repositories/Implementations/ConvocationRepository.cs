@@ -17,13 +17,12 @@ namespace TalentoLocal.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Convocation>> GetAllAsync()
+        public async Task<List<Convocation>?> GetAllAsync()
         {
             return await _context.Convocations
                 .Include(c => c.PublishingEntity)
                 .Include(c => c.Offers)
                 .Include(c => c.Postulations)
-                .Include(c => c.Histories)
                 .ToListAsync();
         }
 
@@ -33,7 +32,6 @@ namespace TalentoLocal.Repositories.Implementations
                 .Include(c => c.PublishingEntity)
                 .Include(c => c.Offers)
                 .Include(c => c.Postulations)
-                .Include(c => c.Histories)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 

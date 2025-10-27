@@ -15,6 +15,28 @@ namespace TalentoLocal.Controllers
             _offerService = offerService;
         }
 
+        [HttpPost("Mockup")]
+        public async Task<ActionResult<int>> CreateMockup()
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            Offer off = new Offer
+            {
+                Name = "Prácticas Profesionales - Desarrollo de Software",
+                Description = "Buscamos estudiantes de ingeniería de sistemas o carreras afines para apoyar en el desarrollo y mantenimiento de aplicaciones internas.",
+                Mode = Models.enums.Mode.OnSite,
+                Duration = "6 meses",
+                SpecificRequirements = "Conocimientos básicos en C#, ASP.NET Core y bases de datos SQL.",
+                MaximumQuota = 3,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(15),
+                IdConvocation = 1
+            };
+
+            var offerId = await _offerService.AddOfferAsync(off);
+            return CreatedAtAction(nameof(GetById), new { id = offerId }, new { id = offerId });
+        }
+
         [HttpPost]
         public async Task<ActionResult<int>> Create([FromBody] Offer offer)
         {

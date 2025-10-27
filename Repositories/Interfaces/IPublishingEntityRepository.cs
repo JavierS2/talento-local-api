@@ -6,7 +6,7 @@ namespace TalentoLocal.Repositories.Interfaces
 {
 	public interface IPublishingEntityRepository
 	{
-		Task<IEnumerable<PublishingEntity>> GetAllAsync();
+		Task<List<PublishingEntity>> GetAllAsync();
 		Task<PublishingEntity?> GetByIdAsync(int id);
 		Task AddAsync(PublishingEntity publishingEntity);
 		Task UpdateAsync(PublishingEntity publishingEntity);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using TalentoLocal.Models.enums;
 namespace TalentoLocal.Models
 {
@@ -12,6 +13,7 @@ namespace TalentoLocal.Models
         public int ConvocationId { get; set; }
 
         // properties navegation
+        [JsonIgnore]
         public Convocation Convocation { get; set; } = null!;
 
         public DateTime ApplicationDate { get; set; }
@@ -29,7 +31,5 @@ namespace TalentoLocal.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        // relationship with evaluation
-        public Evaluation? Evaluation { get; set; }
     }
 }

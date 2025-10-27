@@ -22,7 +22,7 @@ namespace TalentoLocal.Services
             return publishingEntity.Id;
         }
 
-        public async Task<IEnumerable<PublishingEntity>> GetAllAsync()
+        public async Task<List<PublishingEntity>> GetAllAsync()
         {
             return await _repo.GetAllAsync();
         }

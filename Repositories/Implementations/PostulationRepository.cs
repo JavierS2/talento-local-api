@@ -20,7 +20,6 @@ namespace TalentoLocal.Repositories.Implementations
         {
             return await _context.Postulations
                 .Include(p => p.Convocation)
-                .Include(p => p.Evaluation)
                 .ToListAsync();
         }
 
@@ -28,7 +27,6 @@ namespace TalentoLocal.Repositories.Implementations
         {
             return await _context.Postulations
                 .Include(p => p.Convocation)
-                .Include(p => p.Evaluation)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 

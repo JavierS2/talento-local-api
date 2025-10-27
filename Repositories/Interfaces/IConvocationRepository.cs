@@ -7,7 +7,7 @@ namespace TalentoLocal.Repositories.Interfaces
 {
     public interface IConvocationRepository
     {
-        Task<IEnumerable<Convocation>> GetAllAsync();
+        Task<List<Convocation>?> GetAllAsync();
         Task<Convocation?> GetByIdAsync(int id);
         Task<Convocation?> GetByStatusAsync(ConvocationStatus status);
         Task<IEnumerable<Convocation>> SearchByLocationAsync(string location);

@@ -16,7 +16,7 @@ namespace TalentoLocal.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<PublishingEntity>> GetAllAsync()
+        public async Task<List<PublishingEntity>> GetAllAsync()
         {
             return await _context.PublishingEntities
                 .Include(pe => pe.Convocations)
