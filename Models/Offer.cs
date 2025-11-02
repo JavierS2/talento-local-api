@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TalentoLocal.Models
 {
-    [Table("Offers", Schema = "public")]
+    [Table("Offers")]
     public class Offer
     {
         [Key]

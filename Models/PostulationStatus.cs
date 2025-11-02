@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TalentoLocal.Models
 {
-    [Table("PostulationsStatus", Schema = "public")]
+    [Table("PostulationsStatus")]
     public class PostulationStatus
     {
         [Key]
