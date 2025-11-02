@@ -1,35 +1,40 @@
-﻿using System;
-using System.Text.Json.Serialization;
-using TalentoLocal.Models.enums;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace TalentoLocal.Models
 {
+    [Table("Postulations", Schema = "public")]
     public class Postulation
     {
+        [Key]
+        [Column("id")]
         public int Id { get; set; }
 
+        [Required]
+        [Column("user_id")]
         public int UserId { get; set; }
-        
-        // ID FK
-        public int ConvocationId { get; set; }
 
-        // properties navegation
-        [JsonIgnore]
-        public Convocation Convocation { get; set; } = null!;
+        [Required]
+        [Column("offer_id")]
+        public int OfferId { get; set; }
 
-        public DateTime ApplicationDate { get; set; }
+        [ForeignKey("OfferId")]
+        public Offer Offer { get; set; } = null!;
 
-        public PostulationStatus Status { get; set; } = PostulationStatus.Pending;
+        [Column("document_file")]
+        public int DocumentFile { get; set; }
 
-        public string AttachedDocument { get; set; } = string.Empty;
+        [Column("status_id")]
+        public int StatusId { get; set; }
 
-        public string CompanyObservation { get; set; } = string.Empty;
+        [ForeignKey("StatusId")]
+        public PostulationStatus? Status { get; set; }
+        public Evaluation? Evaluation { get; set; }
 
-        public DateTime? ReviewDate { get; set; }
+        [Column("create_at", TypeName = "timestamp")]
+        public DateTime? CreatedAt { get; set; }
 
-        public string ActionHistory { get; set; } = string.Empty;
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
+        [Column("update_at", TypeName = "timestamp")]
+        public DateTime? UpdatedAt { get; set; }
     }
 }
