@@ -4,8 +4,8 @@ namespace TalentoLocal.Services.Interfaces
 {
     public interface IPostulationService
     {
-        Task<int> AddPostulationAsync(Postulation postulation);
         Task<IEnumerable<Postulation>> GetAllAsync();
+        Task<Postulation> CreateAsync(Postulation postulation);
         Task<Postulation?> GetByIdAsync(int id);
         Task<bool> UpdateAsync(int id, Postulation postulation);
         Task<bool> DeleteAsync(int id);
