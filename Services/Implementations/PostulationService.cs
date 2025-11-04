@@ -4,7 +4,7 @@ using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
 using TalentoLocal.Repositories.Interfaces;
 
-namespace TalentoLocal.Services
+namespace TalentoLocal.Services.Implementations
 {
     public class PostulationService : IPostulationService
     {
@@ -17,7 +17,7 @@ namespace TalentoLocal.Services
 
         public async Task<int> AddPostulationAsync(Postulation postulation)
         {
-            if (postulation == null) throw new System.ArgumentNullException(nameof(postulation));
+            if (postulation == null) throw new ArgumentNullException(nameof(postulation));
             await _repo.AddAsync(postulation);
             await _repo.SaveAsync();
             return postulation.Id;
@@ -41,7 +41,7 @@ namespace TalentoLocal.Services
             existing.AttachedDocument = postulation.AttachedDocument;
             existing.CompanyObservation = postulation.CompanyObservation;
             existing.ApplicationDate = postulation.ApplicationDate;
-            existing.UpdatedAt = System.DateTime.UtcNow;
+            existing.UpdatedAt = DateTime.UtcNow;
 
             await _repo.UpdateAsync(existing);
             await _repo.SaveAsync();

@@ -4,7 +4,7 @@ using TalentoLocal.Models;
 using TalentoLocal.Services.Interfaces;
 using TalentoLocal.Repositories.Interfaces;
 
-namespace TalentoLocal.Services
+namespace TalentoLocal.Services.Implementations
 {
     public class OfferService : IOfferService
     {
@@ -17,7 +17,7 @@ namespace TalentoLocal.Services
 
         public async Task<int> AddOfferAsync(Offer offer)
         {
-            if (offer == null) throw new System.ArgumentNullException(nameof(offer));
+            if (offer == null) throw new ArgumentNullException(nameof(offer));
             await _repo.AddAsync(offer);
             await _repo.SaveAsync();
             return offer.Id;
@@ -46,7 +46,7 @@ namespace TalentoLocal.Services
             existing.MaximumQuota = offer.MaximumQuota;
             existing.StartDate = offer.StartDate;
             existing.EndDate = offer.EndDate;
-            existing.UpdatedAt = System.DateTime.UtcNow;
+            existing.UpdatedAt = DateTime.UtcNow;
 
             await _repo.UpdateAsync(existing);
             await _repo.SaveAsync();

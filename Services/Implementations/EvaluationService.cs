@@ -1,11 +1,8 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TalentoLocal.Models;
-using TalentoLocal.Models.enums;
 using TalentoLocal.Services.Interfaces;
 using TalentoLocal.Repositories.Interfaces;
 
-namespace TalentoLocal.Services
+namespace TalentoLocal.Services.Implementations
 {
 	public class EvaluationService : IEvaluationService
 	{
@@ -18,7 +15,7 @@ namespace TalentoLocal.Services
 
 		public async Task<int> AddEvaluationAsync(Evaluation evaluation)
 		{
-			if (evaluation == null) throw new System.ArgumentNullException(nameof(evaluation));
+			if (evaluation == null) throw new ArgumentNullException(nameof(evaluation));
 			await _repo.AddAsync(evaluation);
 			await _repo.SaveAsync();
 			return evaluation.Id;
@@ -50,7 +47,7 @@ namespace TalentoLocal.Services
 			existing.Comments = evaluation.Comments;
 			existing.EvaluationDate = evaluation.EvaluationDate;
 			existing.Status = evaluation.Status;
-			existing.UpdatedAt = System.DateTime.UtcNow;
+			existing.UpdatedAt = DateTime.UtcNow;
 
 			await _repo.UpdateAsync(existing);
 			await _repo.SaveAsync();
