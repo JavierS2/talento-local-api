@@ -2,7 +2,7 @@
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
 
-namespace TalentoLocal.Repositories
+namespace TalentoLocal.Repositories.Implementations
 {
     public class OfferRepository : IOfferRepository
     {
