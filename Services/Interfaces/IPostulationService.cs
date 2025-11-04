@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TalentoLocal.Models;
 
 namespace TalentoLocal.Services.Interfaces
