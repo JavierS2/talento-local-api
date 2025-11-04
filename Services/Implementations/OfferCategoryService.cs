@@ -14,7 +14,7 @@ namespace TalentoLocal.Services.Implementations
         }
 
         // Obtener todas las categorías
-        public async Task<IEnumerable<OfferCategory>> GetAllAsync()
+        public async Task<List<OfferCategory>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
         }

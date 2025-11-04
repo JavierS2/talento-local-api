@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace TalentoLocal.Models
 {
@@ -14,7 +15,8 @@ namespace TalentoLocal.Models
         [Column("name")]
         public string? Name { get; set; }
 
-        public ICollection<Postulation> Postulations { get; set; } = new List<Postulation>();
+        [JsonIgnore] //Delete this after created dto and mappers
+        public Postulation? Postulations { get; set; }
         
         [Column("create_at", TypeName = "timestamp")]
         public DateTime? CreatedAt { get; set; }

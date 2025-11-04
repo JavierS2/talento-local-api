@@ -6,7 +6,7 @@ namespace TalentoLocal.Repositories.Interfaces
 {
     public interface IOfferRepository
     {
-        Task<IEnumerable<Offer>> GetAllAsync();
+        Task<List<Offer>> GetAllAsync();
         Task<Offer?> GetByIdAsync(int id);
         Task AddAsync(Offer offer);
         Task UpdateAsync(Offer offer);

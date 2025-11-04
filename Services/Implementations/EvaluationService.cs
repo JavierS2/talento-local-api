@@ -14,7 +14,7 @@ namespace TalentoLocal.Services.Implementations
         }
 
         // Obtener todas las evaluaciones
-        public async Task<IEnumerable<Evaluation>> GetAllAsync()
+        public async Task<List<Evaluation>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
         }

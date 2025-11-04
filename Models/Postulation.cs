@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace TalentoLocal.Models
 {
@@ -29,6 +30,8 @@ namespace TalentoLocal.Models
 
         [ForeignKey("StatusId")]
         public PostulationStatus? Status { get; set; }
+
+        [JsonIgnore]
         public Evaluation? Evaluation { get; set; }
 
         [Column("create_at", TypeName = "timestamp")]

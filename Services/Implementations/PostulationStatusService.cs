@@ -13,7 +13,7 @@ namespace TalentoLocal.Services.Implementations
             _postulationStatusRepository = postulationStatusRepository;
         }
 
-        public async Task<IEnumerable<PostulationStatus>> GetAllAsync()
+        public async Task<List<PostulationStatus>> GetAllAsync()
         {
             return await _postulationStatusRepository.GetAllAsync();
         }

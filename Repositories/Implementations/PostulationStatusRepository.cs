@@ -13,7 +13,7 @@ namespace TalentoLocal.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<PostulationStatus>> GetAllAsync()
+        public async Task<List<PostulationStatus>> GetAllAsync()
         {
             return await _context.PostulationStatus
                 .Include(s => s.Postulations)
