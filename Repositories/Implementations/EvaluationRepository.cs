@@ -8,9 +8,9 @@ namespace TalentoLocal.Repositories
 {
     public class EvaluationRepository : IEvaluationRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DbDevopsContext _context;
 
-        public EvaluationRepository(ApplicationDbContext context)
+        public EvaluationRepository(DbDevopsContext context)
         {
             _context = context;
         }

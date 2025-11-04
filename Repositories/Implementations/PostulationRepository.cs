@@ -8,9 +8,9 @@ namespace TalentoLocal.Repositories
 {
     public class PostulationRepository : IPostulationRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DbDevopsContext _context;
 
-        public PostulationRepository(ApplicationDbContext context)
+        public PostulationRepository(DbDevopsContext context)
         {
             _context = context;
         }

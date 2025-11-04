@@ -8,9 +8,9 @@ namespace TalentoLocal.Repositories
 {
     public class OfferRepository : IOfferRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DbDevopsContext _context;
 
-        public OfferRepository(ApplicationDbContext context)
+        public OfferRepository(DbDevopsContext context)
         {
             _context = context;
         }
