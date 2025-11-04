@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace TalentoLocal.Repositories
 {
