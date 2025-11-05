@@ -28,6 +28,23 @@ public partial class DbDevopsContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<PublishingEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Publishi_3214EC071949CE6C");
+            entity.ToTable("PublishingEntity", "TalentoLocal");
+        });
+
+        modelBuilder.Entity<Convocation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Convocat_3214EC07C1741D02");
+            entity.ToTable("Convocation", "TalentoLocal");
+
+            // Relaciones
+            entity.HasOne(e => e.PublishingEntity)
+                  .WithMany(p => p.Convocations)
+                  .HasForeignKey(e => e.PublishingEntityId);
+
+        });
 
         modelBuilder.Entity<Offer>(entity =>
         {
@@ -76,5 +93,7 @@ public partial class DbDevopsContext : DbContext
         OnModelCreatingPartial(modelBuilder);
     }
 
+
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
 }
