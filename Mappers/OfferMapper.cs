@@ -74,6 +74,48 @@ namespace TalentoLocal.Mappers
             return list;
         }
 
+        public static OfferDetailDTO ToDetailDTO(Offer entity)
+        {
+            if (entity == null)
+                return null!;
+
+            // Calcular el tiempo publicado, ej: "hace 3 días"
+            string postedTime = (DateTime.Now - entity.PublicationDate).Days switch
+            {
+                0 => "Hoy",
+                1 => "Hace 1 día",
+                int n when n < 7 => $"Hace {n} días",
+                _ => $"{entity.PublicationDate:dd/MM/yyyy}"
+            };
+
+            return new OfferDetailDTO(
+                entity.Id,
+                entity.Title,
+                entity.SubTitle,
+                "Empresa desconocida", //entity.Company?.Name ?? 
+                entity.Location,
+                entity.ContractType,
+                entity.Schedule,
+                entity.Modality,
+                entity.Salary,
+                entity.PaymentType,
+                postedTime,
+                entity.PublicationDate,
+                false, //entity.Featured,
+                false,     //entity.Urgent
+                null, // entity.Company?.Rating
+                entity.Category?.Name ?? "Sin categoría",
+                entity.YearsExperience,
+                entity.Journey,
+                entity.Description,
+                entity.Requeriments,
+                entity.Benefits
+            );
+        }
+
+
+
+
         public static List<Offer> ToEntityList(IEnumerable<OfferDTO> dtos)
         {
             var list = new List<Offer>();
