@@ -1,97 +1,91 @@
 using Microsoft.AspNetCore.Mvc;
-using TalentoLocal.Models;
+using TalentoLocal.DTOs;
 using TalentoLocal.Services.Interfaces;
 
 namespace TalentoLocal.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class EvaluationsController : ControllerBase
     {
-        private readonly IEvaluationService _evaluationService;
+        private readonly IEvaluationService _service;
 
-        public EvaluationsController(IEvaluationService evaluationService)
+        public EvaluationsController(IEvaluationService service)
         {
-            _evaluationService = evaluationService;
-        }
-        [HttpPost("Mockup")]
-        public async Task<ActionResult<Evaluation>> CreateMockup()
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            Evaluation eva = new()
-            {
-                PostulationId = 1,
-                Justification = "Conocimientos técnicos, comunicación y resolución de problemas.",
-                
-            };
-
-            var evaluation = await _evaluationService.CreateAsync(eva);
-            return CreatedAtAction(nameof(GetById), new { id = evaluation.Id}, evaluation);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<Evaluation>> Create([FromBody] Evaluation evaluation)
-        {
-            try
-            {
-                if (evaluation == null) return NotFound(new {message = "Failed to create the evaluation (Data is null)"});
-                if (!ModelState.IsValid) return NotFound(new { message = "Failed to create the evaluation" });
-
-                var eva = await _evaluationService.CreateAsync(evaluation);
-                return CreatedAtAction(nameof(GetById), new { id = eva.Id }, eva);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new {message = "Error creating evaluation", error = ex.Message});
-            }
-            
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Evaluation>>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var evaluation = await _evaluationService.GetAllAsync();
-                return (evaluation != null) ? Ok(evaluation) : NotFound(new { message = "Failed to fetch the evaluations" });
-                
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Error fetching evaluations", error = ex.Message });
-            }
-
+            var evaluations = await _service.GetAllAsync();
+            return Ok(evaluations);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Evaluation>> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                var ev = await _evaluationService.GetByIdAsync(id);
-                return (ev != null) ? Ok(ev) : NotFound(new { message = "Failed to fetch the evaluation" });
+                var evaluation = await _service.GetByIdAsync(id);
+                return Ok(evaluation);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al obtener la evaluación." });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] EvaluationDTO dto)
+        {
+            try
+            {
+                if (dto == null)
+                    return BadRequest("El cuerpo de la solicitud no puede estar vacío.");
+
+                var created = await _service.CreateAsync(dto);
+                return Created("api/Evaluations", created);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Error fetching evaluation", error = ex.Message });
+                return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
             }
         }
 
         [HttpPut("{id}")]
-
-        public async Task<ActionResult<Evaluation>> Updated(int id,[FromBody] Evaluation eva)
+        public async Task<IActionResult> Update(int id, [FromBody] EvaluationDTO dto)
         {
             try
             {
-                if(id < 0 || eva  == null) return NotFound( new { message = "Failed to update the evaluation (NOT FOUND)"});
-                var ev = await _evaluationService.UpdateAsync(id, eva);
-                return ev ? Ok(ev) : NotFound(new { message = "Failed to update the evaluation" });
-                
+                var result = await _service.UpdateAsync(id, dto);
+                return result
+                    ? Ok(new { message = "Evaluación actualizada correctamente." })
+                    : NotFound(new { message = "No se pudo actualizar la evaluación." });
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return StatusCode(500, new { message = "Error applying evaluation update", error = ex.Message });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al actualizar la evaluación." });
             }
         }
 
@@ -100,13 +94,22 @@ namespace TalentoLocal.Controllers
         {
             try
             {
-                if (id < 0) return NotFound(new { message = "Failed to delete the evaluation (NOT FOUND)" });
-                var deleted = await _evaluationService.DeleteAsync(id);
-                return deleted ? Ok(deleted) : NotFound(new { message = "Failed to delete the evaluation" });
+                var result = await _service.DeleteAsync(id);
+                return result
+                    ? Ok(new { message = "Evaluación eliminada correctamente." })
+                    : NotFound(new { message = "No se pudo eliminar la evaluación." });
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return StatusCode(500, new { message = "Error deleting evaluation", error = ex.Message });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al eliminar la evaluación." });
             }
         }
     }
