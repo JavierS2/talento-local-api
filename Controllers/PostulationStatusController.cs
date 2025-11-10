@@ -1,119 +1,144 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TalentoLocal.Models;
+using TalentoLocal.DTOs;
 using TalentoLocal.Services.Interfaces;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System;
+using System.Threading.Tasks;
 
 namespace TalentoLocal.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class PostulationStatusController(IPostulationStatusService postulationStatusService) : ControllerBase
+    [Route("api/[controller]")]
+    public class PostulationStatusController : ControllerBase
     {
-        private readonly IPostulationStatusService _postulationStatusService = postulationStatusService;
+        private readonly IPostulationStatusService _service;
 
-        [HttpPost("Mockup")]
-        public async Task<ActionResult<int>> CreateMockup()
+        public PostulationStatusController(IPostulationStatusService service)
         {
-            PostulationStatus pos = new()
-            {
-                Name = "Abierto",
-
-            };
-
-            var createPos = await _postulationStatusService.CreateAsync(pos);
-
-            return CreatedAtAction(nameof(GetById), new { id = createPos.Id }, createPos);
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<PostulationStatus>>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var pos = await _postulationStatusService.GetAllAsync();
-                if(pos == null)
-                {
-                    return NotFound(new {message = "Failed fetching the postulation status"});
-                }
-                return Ok(pos);
-            } catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Error obtaining the postulations status", error = ex.Message });
-            }
+            var statuses = await _service.GetAllAsync();
+            return Ok(statuses);
         }
 
-        
+
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostulationStatus>> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-            var pos = await _postulationStatusService.GetByIdAsync(id);
-            if (pos == null)
-            {
-                return NotFound( new { message = "Failed fetching postulation status (Postulation status ID NOT FOUND)"});
+                var status = await _service.GetByIdAsync(id);
+                return Ok(status);
             }
-            return Ok(pos);
-
-            } catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return StatusCode(500, new { message = "Error obtaining the postulation status ID", error = ex.Message });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al obtener el estado de postulación." });
             }
         }
 
-        
         [HttpPost]
-        public async Task<ActionResult<PostulationStatus>> Create([FromBody] PostulationStatus postulation)
+        public async Task<IActionResult> Create([FromBody] PostulationStatusDTO dto)
         {
             try
             {
-                if (postulation == null) return NotFound( new { message = "Failed creating postulation status" });
-                if (!ModelState.IsValid) return BadRequest(ModelState);
 
-                var pos = await _postulationStatusService.CreateAsync(postulation);
+                if (dto == null)
+                    return BadRequest(new { message = "El cuerpo de la solicitud no puede estar vacío." });
 
-                return CreatedAtAction(nameof(GetById), new { id = pos.Id }, pos);
+                if (string.IsNullOrWhiteSpace(dto.Name))
+                    return BadRequest(new { message = "El nombre del estado de postulación es obligatorio." });
 
+                var created = await _service.CreateAsync(dto);
+
+                // Retornar 201 Created
+                return Created("api/PostulationStatus", created);
             }
-            catch (Exception ex)
+            catch (ArgumentNullException ex)
             {
-                return StatusCode(500, new { message = "Error creating postulation status", error = ex.Message });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al crear el estado de postulación." });
             }
         }
 
-        
         [HttpPut("{id}")]
-        public async Task<ActionResult<PostulationStatus>> Update(int id, [FromBody] PostulationStatus value)
+        public async Task<IActionResult> Update(int id, [FromBody] PostulationStatusDTO dto)
         {
             try
             {
-                if (value == null || id < 0) return NotFound(new { message = "Failed updating postulation status (Postulation status NOT FOUND)" });
-                if (!ModelState.IsValid) return BadRequest(ModelState);
+                if (dto == null)
+                    return BadRequest(new { message = "El cuerpo de la solicitud no puede estar vacío." });
 
-                var pos = await _postulationStatusService.UpdateAsync(id, value);
+                if (string.IsNullOrWhiteSpace(dto.Name))
+                    return BadRequest(new { message = "El nombre del estado de postulación es obligatorio." });
 
-                return Ok(pos);
+                var result = await _service.UpdateAsync(id, dto);
+
+                return result
+                    ? Ok(new { message = "Estado de postulación actualizado correctamente." })
+                    : NotFound(new { message = "No se pudo actualizar el estado de postulación." });
             }
-            catch (Exception ex)
+            catch (ArgumentNullException ex)
             {
-                return StatusCode(500, new { message = "Error updating postulation status", error = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
-
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al actualizar el estado de postulación." });
+            }
         }
 
-        
         [HttpDelete("{id}")]
-        public async Task<ActionResult<PostulationStatus>> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var pos = await _postulationStatusService.DeleteAsync(id);
-                return pos ? Ok(id) : NotFound(new { message = "Failed deleting" });
+                var result = await _service.DeleteAsync(id);
+
+                return result
+                    ? Ok(new { message = "Estado de postulación eliminado correctamente." })
+                    : NotFound(new { message = "No se pudo eliminar el estado de postulación." });
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return StatusCode(500, new { message = "Error deleting postulation status ID", error = ex.Message });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al eliminar el estado de postulación." });
             }
         }
     }

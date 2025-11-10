@@ -1,122 +1,131 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TalentoLocal.Models;
+using TalentoLocal.DTOs;
 using TalentoLocal.Services.Interfaces;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace TalentoLocal.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class OfferCategoryController(IOfferCategoryService offerCategoryService) : ControllerBase
+    [Route("api/[controller]")]
+    public class OfferCategoryController : ControllerBase
     {
-        private readonly IOfferCategoryService _offerCategoryService = offerCategoryService;
+        private readonly IOfferCategoryService _service;
 
-
-        [HttpPost("Mockup")]
-        public async Task<ActionResult<int>> CreateMockup()
+        public OfferCategoryController(IOfferCategoryService service)
         {
-            OfferCategory off = new()
-            {
-                Name = "Desarrollo de Software"
-            };
-
-            var offCreate = await _offerCategoryService.CreateAsync(off);
-            return CreatedAtAction(nameof(GetById), new {id = offCreate.Id}, offCreate);
-
+            _service = service;
         }
+
 
         [HttpGet]
-        public async Task<ActionResult<List<OfferCategory>>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var categories = await _offerCategoryService.GetAllAsync();
-                if (categories == null)
-                {
-                    return NotFound(new { message = "Failed feching offer categories (Categories not found)" });
-                }
-                return Ok(categories);
-
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Error fetching offer categories", error = ex.Message });
-            }
+            var categories = await _service.GetAllAsync();
+            return Ok(categories);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<OfferCategory>> GetById(int id)
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
         {
+            if (id <= 0)
+                return BadRequest(new { message = "El ID debe ser un número positivo." });
+
             try
             {
-                if (id == -1) return NotFound(new {message = "Failed feching offer category (Category ID not found)" });
-                var category = await _offerCategoryService.GetByIdAsync(id);
+                var category = await _service.GetByIdAsync(id);
+                if (category == null)
+                    return NotFound(new { message = $"No se encontró la categoría con ID {id}." });
+
                 return Ok(category);
-
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { message = "Error fetching offer category ID", error = ex.Message });
+                return StatusCode(500, new { message = "Ocurrió un error al obtener la categoría de oferta." });
             }
-            
         }
+
 
         [HttpPost]
-        public async Task<ActionResult<OfferCategory>> Create([FromBody] OfferCategory value)
+        public async Task<IActionResult> Create([FromBody] OfferCategoryDTO dto)
         {
             try
             {
-                if (value == null) return NotFound(new { message = "Failed creating offer category (Category is null)" });
+                if (dto == null)
+                    return BadRequest("El cuerpo de la solicitud no puede estar vacío.");
 
-                var newCategory = await _offerCategoryService.CreateAsync(value);
-                return CreatedAtAction(nameof(GetById), new { id = newCategory.Id }, newCategory ); ;
+                if (string.IsNullOrWhiteSpace(dto.Name))
+                    return BadRequest("El nombre de la categoría es obligatorio.");
 
+                var created = await _service.CreateAsync(dto);
+
+                return Created("api/OfferCategory", created);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Error creating offer category", error = ex.Message });
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
-            
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<OfferCategory>> Put(int id, [FromBody] OfferCategory value)
+
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] OfferCategoryDTO dto)
         {
+            if (id <= 0)
+                return BadRequest(new { message = "El ID debe ser un número positivo." });
+
+            if (dto == null)
+                return BadRequest(new { message = "El cuerpo de la solicitud no puede estar vacío." });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
-                if (value == null && id == -1) NotFound(new { message = "Failed updating offer category (Category is null)" });
-
-                var updateCategory = await _offerCategoryService.UpdateAsync(id, value);
-
-                return updateCategory ? Ok(updateCategory) : NotFound(new { message = "Failed updating offer category (Category is null)"});
-
+                var result = await _service.UpdateAsync(id, dto);
+                return result
+                    ? Ok(new { message = "Categoría de oferta actualizada correctamente." })
+                    : NotFound(new { message = $"No se encontró la categoría con ID {id}." });
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return StatusCode(500, new { message = "Error updating offer category", error = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
-
-            
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al actualizar la categoría de oferta." });
+            }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
         {
+            if (id <= 0)
+                return BadRequest(new { message = "El ID debe ser un número positivo." });
+
             try
             {
-                if (id == -1 || id < 0) return NotFound(new { message = "Failed deleting offer category (Category is null)" });
-
-                var deleteCategory = await _offerCategoryService.DeleteAsync(id);
-
-                return deleteCategory ? Ok(deleteCategory) : NotFound(new { message = "Failed deleting offer category" });
-
+                var result = await _service.DeleteAsync(id);
+                return result
+                    ? Ok(new { message = "Categoría de oferta eliminada correctamente." })
+                    : NotFound(new { message = $"No se encontró la categoría con ID {id}." });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { message = "Error deleting offer category", error = ex.Message });
+                return StatusCode(500, new { message = "Ocurrió un error al eliminar la categoría de oferta." });
             }
-            
         }
     }
 }

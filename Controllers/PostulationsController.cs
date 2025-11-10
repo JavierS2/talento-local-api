@@ -1,94 +1,94 @@
-using Microsoft.AspNetCore.Mvc;
-using TalentoLocal.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using TalentoLocal.DTOs;
 using TalentoLocal.Services.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace TalentoLocal.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class PostulationsController(IPostulationService postulationService) : ControllerBase
+    [Route("api/[controller]")]
+    public class PostulationController : ControllerBase
     {
-        private readonly IPostulationService _postulationService = postulationService;
+        private readonly IPostulationService _service;
 
-        [HttpPost("Mockup")]
-        public async Task<ActionResult<int>> CreateMockup()
+        public PostulationController(IPostulationService service)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            Postulation postu = new()
-            {
-                OfferId = 1,
-                DocumentFile = 1005895684,
-                StatusId = 1,
-                UserId = 1,
-            };
-
-            var pos = await _postulationService.CreateAsync(postu);
-            return CreatedAtAction(nameof(GetById), new { id = pos.Id }, new { id = pos });
-        }
-
-
-        [HttpPost]
-        public async Task<ActionResult<PostulationStatus>> Create([FromBody] Postulation postulation)
-        {
-            try
-            {
-                if (postulation == null) return NotFound(new {message = "Failed to create the postulation (Data is null)"});
-                if (!ModelState.IsValid) return BadRequest(ModelState);
-
-                var postu = await _postulationService.CreateAsync(postulation);
-                return CreatedAtAction(nameof(GetById), new { id = postu.Id }, new { id = postu });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Error creating postulation", error = ex.Message });
-            }
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var postulation = await _postulationService.GetAllAsync();
-                if (postulation == null) return NotFound(new { message = "Failed to fetch the postulations (NOT FOUND) " });
-                return Ok(postulation);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Error fetching postulations", error = ex.Message });
-            }
+            var postulaciones = await _service.GetAllAsync();
+            return Ok(postulaciones);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Postulation>> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                var result = await _postulationService.GetByIdAsync(id);
-                if (result == null) return NotFound(new {message = "Failed to fetch the postulation (NOT FOUND)"});
-                return Ok(result);
+                var postulation = await _service.GetByIdAsync(id);
+                return Ok(postulation);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al obtener la postulación." });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] PostulationDTO dto)
+        {
+            try
+            {
+                if (dto == null)
+                    return BadRequest("El cuerpo de la solicitud no puede estar vacío.");
+
+                var created = await _service.CreateAsync(dto);
+
+                return Created("api/Postulation", created);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Error fetching postulation", error = ex.Message });
+                return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Postulation>> Updated(int id,[FromBody] Postulation postulation)
+        public async Task<IActionResult> Update(int id, [FromBody] PostulationDTO dto)
         {
             try
             {
-                if (postulation == null || id < 0) return NotFound(new {message = "Failed to update the postulation (NOT FOUND)"});
-
-                var updated = await _postulationService.UpdateAsync(id, postulation);
-
-                return updated ? Ok(updated) : NotFound(new { message = "Failed to update the postulation" });
+                var result = await _service.UpdateAsync(id, dto);
+                return result
+                    ? Ok(new { message = "Postulación actualizada correctamente." })
+                    : NotFound(new { message = "No se pudo actualizar la postulación." });
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return StatusCode(500, new { message = "Error updating postulation", error = ex.Message });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al actualizar la postulación." });
             }
         }
 
@@ -97,13 +97,22 @@ namespace TalentoLocal.Controllers
         {
             try
             {
-                if (id < 0) return NotFound(new { message = "Failed to delete the postulation (NOT FOUND)" });
-                var deleted = await _postulationService.DeleteAsync(id);
-                return deleted ? Ok(deleted) : NotFound(new { message = "Failed to delete the postulation" });
+                var result = await _service.DeleteAsync(id);
+                return result
+                    ? Ok(new { message = "Postulación eliminada correctamente." })
+                    : NotFound(new { message = "No se pudo eliminar la postulación." });
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return StatusCode(500, new { message = "Error deleting postulation", error = ex.Message });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al eliminar la postulación." });
             }
         }
     }

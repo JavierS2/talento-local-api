@@ -1,86 +1,80 @@
+using System.Linq;
+using TalentoLocal.DTOs;
+using TalentoLocal.Mappers;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
 using TalentoLocal.Services.Interfaces;
 
-namespace TalentoLocal.Services.Implementations
+public class PostulationService : IPostulationService
 {
-    public class PostulationService : IPostulationService
+    private readonly IPostulationRepository _repository;
+
+    public PostulationService(IPostulationRepository repository)
     {
-        private readonly IPostulationRepository _postulationRepository;
+        _repository = repository;
+    }
 
-        public PostulationService(IPostulationRepository postulationRepository)
-        {
-            _postulationRepository = postulationRepository;
-        }
+    public async Task<IEnumerable<PostulationDTO>> GetAllAsync()
+    {
+        var entities = await _repository.GetAllAsync();
+        return entities?.Select(PostulationMapper.ToDto).ToList() ?? new List<PostulationDTO>();
+    }
 
-        public async Task<IEnumerable<Postulation>> GetAllAsync()
-        {
-            return await _postulationRepository.GetAllAsync();
-        }
+    public async Task<PostulationDTO> GetByIdAsync(int id)
+    {
+        if (id <= 0)
+            throw new ArgumentException("El ID de la postulación no puede ser menor o igual a cero.");
 
-        public async Task<Postulation?> GetByIdAsync(int id)
-        {
-            if (id <= 0)
-                throw new ArgumentException("El ID debe ser mayor que cero.");
+        var entity = await _repository.GetByIdAsync(id);
+        if (entity == null)
+            throw new KeyNotFoundException($"No se encontró ninguna postulación con el ID {id}.");
 
-            return await _postulationRepository.GetByIdAsync(id);
-        }
+        return PostulationMapper.ToDto(entity);
+    }
 
-        public async Task<Postulation> CreateAsync(Postulation postulation)
-        {
-            if (postulation == null)
-                throw new ArgumentNullException(nameof(postulation), "La postulación no puede ser nula.");
+    public async Task<PostulationDTO> CreateAsync(PostulationDTO dto)
+    {
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto), "La postulación no puede ser nula.");
 
-            if (postulation.UserId <= 0)
-                throw new ArgumentException("El ID del usuario es inválido.");
+        var entity = PostulationMapper.ToEntity(dto);
+        await _repository.AddAsync(entity);
+        await _repository.SaveChangesAsync();
 
-            if (postulation.OfferId <= 0)
-                throw new ArgumentException("El ID de la oferta es inválido.");
+        return PostulationMapper.ToDto(entity);
+    }
 
-            postulation.CreatedAt = DateTime.UtcNow;
-            postulation.UpdatedAt = DateTime.UtcNow;
+    public async Task<bool> UpdateAsync(int id, PostulationDTO dto)
+    {
+        if (id <= 0)
+            throw new ArgumentException("El ID de la postulación no puede ser menor o igual a cero.");
 
-            await _postulationRepository.AddAsync(postulation);
-            await _postulationRepository.SaveChangesAsync();
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto), "La postulación no puede ser nula.");
 
-            return postulation;
-        }
+        var existing = await _repository.GetByIdAsync(id);
+        if (existing == null)
+            throw new KeyNotFoundException($"No se encontró ninguna postulación con el ID {id}.");
 
-        public async Task<bool> UpdateAsync(int id, Postulation postulation)
-        {
-            if (id <= 0)
-                throw new ArgumentException("El ID debe ser mayor que cero.");
+        var entity = PostulationMapper.ToEntity(dto);
+        entity.Id = id;
 
-            var existing = await _postulationRepository.GetByIdAsync(id);
-            if (existing == null)
-                return false;
+        await _repository.UpdateAsync(entity);
+        await _repository.SaveChangesAsync();
+        return true;
+    }
 
-            // Actualiza solo los campos permitidos
-            existing.UserId = postulation.UserId;
-            existing.OfferId = postulation.OfferId;
-            existing.DocumentFile = postulation.DocumentFile;
-            existing.StatusId = postulation.StatusId;
-            existing.UpdatedAt = DateTime.UtcNow;
+    public async Task<bool> DeleteAsync(int id)
+    {
+        if (id <= 0)
+            throw new ArgumentException("El ID de la postulación no puede ser menor o igual a cero.");
 
-            await _postulationRepository.UpdateAsync(existing);
-            await _postulationRepository.SaveChangesAsync();
+        var existing = await _repository.GetByIdAsync(id);
+        if (existing == null)
+            throw new KeyNotFoundException($"No se encontró ninguna postulación con el ID {id}.");
 
-            return true;
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            if (id <= 0)
-                throw new ArgumentException("El ID debe ser mayor que cero.");
-
-            var existing = await _postulationRepository.GetByIdAsync(id);
-            if (existing == null)
-                return false;
-
-            await _postulationRepository.DeleteAsync(id);
-            await _postulationRepository.SaveChangesAsync();
-
-            return true;
-        }
+        await _repository.DeleteAsync(id);
+        await _repository.SaveChangesAsync();
+        return true;
     }
 }
