@@ -19,8 +19,12 @@ namespace TalentoLocal.Services.Implementations
         public async Task<List<OfferDTO>> GetAllAsync()
         {
             var offers = await _repository.GetAllAsync();
+            Console.WriteLine($"Ofertas recuperadas: {offers.Count}");
+            foreach (var o in offers)
+                Console.WriteLine($"ID: {o.Id}, Title: {o.Title}");
             return offers.Select(OfferMapper.ToDTO).ToList();
         }
+
 
         // Obtener una oferta por ID
         public async Task<OfferDTO?> GetByIdAsync(int id)
