@@ -100,10 +100,10 @@ namespace TalentoLocal.Mappers
                 entity.Salary,
                 entity.PaymentType,
                 postedTime,
-                entity.PublicationDate,
-                false, //entity.Featured,
-                false,     //entity.Urgent
-                null, // entity.Company?.Rating
+                entity.PublicationDate, //
+                entity.Featured ?? false, //
+                entity.Urgent ?? false, //
+                entity.Rating,          
                 entity.Category?.Name ?? "Sin categoría",
                 entity.YearsExperience,
                 entity.Journey,
