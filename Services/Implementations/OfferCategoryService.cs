@@ -39,13 +39,16 @@ public class OfferCategoryService : IOfferCategoryService
         if (string.IsNullOrWhiteSpace(dto.Name))
             throw new ArgumentException("El nombre de la categoría es obligatorio.", nameof(dto.Name));
 
-        var entity = OfferCategoryMapper.ToEntity(dto);
+        var offerCategory = OfferCategoryMapper.ToEntity(dto);
 
-        await _repository.AddAsync(entity);
+        offerCategory.CreatedAt = DateTime.Now;
+        offerCategory.UpdatedAt = DateTime.Now;
+
+        await _repository.AddAsync(offerCategory);
         await _repository.SaveChangesAsync();
 
         // EF Core asigna automáticamente el ID después del SaveChangesAsync
-        return OfferCategoryMapper.ToDto(entity);
+        return OfferCategoryMapper.ToDto(offerCategory);
     }
 
     public async Task<bool> UpdateAsync(int id, OfferCategoryDTO dto)
@@ -63,8 +66,8 @@ public class OfferCategoryService : IOfferCategoryService
         if (existing == null)
             throw new KeyNotFoundException($"No se encontró ninguna categoría de oferta con el ID {id}.");
 
-        // actualiza sólo lo necesario
         existing.Name = dto.Name;
+        existing.UpdatedAt = DateTime.Now;
 
         await _repository.UpdateAsync(existing);
         await _repository.SaveChangesAsync();
