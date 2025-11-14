@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TalentoLocal.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,8 +22,8 @@ namespace TalentoLocal.Migrations
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    update_at = table.Column<byte[]>(type: "timestamp", nullable: true)
+                    create_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    update_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,8 +38,8 @@ namespace TalentoLocal.Migrations
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    update_at = table.Column<byte[]>(type: "timestamp", nullable: true)
+                    create_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    update_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -68,12 +68,12 @@ namespace TalentoLocal.Migrations
                     status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     contract_type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     payment_type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    publication_date = table.Column<DateTime>(type: "date", nullable: false),
-                    closing_date = table.Column<DateTime>(type: "date", nullable: true),
+                    publication_date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    closing_date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     company_id = table.Column<int>(type: "int", nullable: false),
                     category_id = table.Column<int>(type: "int", nullable: false),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    update_at = table.Column<byte[]>(type: "timestamp", nullable: true),
+                    create_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    update_at = table.Column<DateTime>(type: "datetime2", nullable: false),
                     featured = table.Column<bool>(type: "bit", nullable: true),
                     urgent = table.Column<bool>(type: "bit", nullable: true),
                     rating = table.Column<float>(type: "real", nullable: true)
@@ -101,8 +101,8 @@ namespace TalentoLocal.Migrations
                     offer_id = table.Column<int>(type: "int", nullable: false),
                     document_file = table.Column<int>(type: "int", nullable: false),
                     status_id = table.Column<int>(type: "int", nullable: false),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    update_at = table.Column<byte[]>(type: "timestamp", nullable: true),
+                    create_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    update_at = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PostulationStatusId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -139,8 +139,8 @@ namespace TalentoLocal.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     postulation_id = table.Column<int>(type: "int", nullable: false),
                     justification = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    create_at = table.Column<DateTime>(type: "date", nullable: false),
-                    update_at = table.Column<DateTime>(type: "date", nullable: false)
+                    create_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    update_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {

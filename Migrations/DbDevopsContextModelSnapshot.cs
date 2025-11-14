@@ -33,7 +33,7 @@ namespace TalentoLocal.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("date")
+                        .HasColumnType("datetime2")
                         .HasColumnName("create_at");
 
                     b.Property<string>("Justification")
@@ -46,7 +46,7 @@ namespace TalentoLocal.Migrations
                         .HasColumnName("postulation_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("date")
+                        .HasColumnType("datetime2")
                         .HasColumnName("update_at");
 
                     b.HasKey("Id");
@@ -80,7 +80,7 @@ namespace TalentoLocal.Migrations
                         .HasColumnName("category_id");
 
                     b.Property<DateTime?>("ClosingDate")
-                        .HasColumnType("date")
+                        .HasColumnType("datetime2")
                         .HasColumnName("closing_date");
 
                     b.Property<int>("CompanyId")
@@ -93,7 +93,7 @@ namespace TalentoLocal.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("contract_type");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("create_at");
 
@@ -131,7 +131,7 @@ namespace TalentoLocal.Migrations
                         .HasColumnName("payment_type");
 
                     b.Property<DateTime>("PublicationDate")
-                        .HasColumnType("date")
+                        .HasColumnType("datetime2")
                         .HasColumnName("publication_date");
 
                     b.Property<float?>("Rating")
@@ -167,8 +167,8 @@ namespace TalentoLocal.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasColumnName("title");
 
-                    b.Property<byte[]>("UpdatedAt")
-                        .HasColumnType("timestamp")
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
                         .HasColumnName("update_at");
 
                     b.Property<bool?>("Urgent")
@@ -195,7 +195,7 @@ namespace TalentoLocal.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("create_at");
 
@@ -205,8 +205,8 @@ namespace TalentoLocal.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("name");
 
-                    b.Property<byte[]>("UpdatedAt")
-                        .HasColumnType("timestamp")
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
                         .HasColumnName("update_at");
 
                     b.HasKey("Id");
@@ -223,7 +223,7 @@ namespace TalentoLocal.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("create_at");
 
@@ -242,8 +242,8 @@ namespace TalentoLocal.Migrations
                         .HasColumnType("int")
                         .HasColumnName("status_id");
 
-                    b.Property<byte[]>("UpdatedAt")
-                        .HasColumnType("timestamp")
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
                         .HasColumnName("update_at");
 
                     b.Property<int>("UserId")
@@ -270,7 +270,7 @@ namespace TalentoLocal.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("create_at");
 
@@ -280,8 +280,8 @@ namespace TalentoLocal.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
 
-                    b.Property<byte[]>("UpdatedAt")
-                        .HasColumnType("timestamp")
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
                         .HasColumnName("update_at");
 
                     b.HasKey("Id");
