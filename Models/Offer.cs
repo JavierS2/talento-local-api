@@ -72,10 +72,10 @@ namespace TalentoLocal.Models
         public string PaymentType { get; set; } = string.Empty;
 
         [Required]
-        [Column("publication_date", TypeName = "date")]
+        [Column("publication_date")]
         public DateTime PublicationDate { get; set; }
 
-        [Column("closing_date", TypeName = "date")]
+        [Column("closing_date")]
         public DateTime? ClosingDate { get; set; }
 
         [Required]
@@ -92,10 +92,10 @@ namespace TalentoLocal.Models
         public List<Postulation>? Postulations { get; set; }
 
         [Column("create_at")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-        [Column("update_at", TypeName = "timestamp")]
-        public DateTime? UpdatedAt { get; set; }
+        [Column("update_at")]
+        public DateTime UpdatedAt { get; set; }
 
         [Column("featured")] //
         public Boolean? Featured { get; set; }

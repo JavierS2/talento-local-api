@@ -21,26 +21,34 @@ builder.Services.AddSwaggerGen();
 
 // DbContext
 builder.Services.AddDbContext<DbDevopsContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AzureSqlConnection")));
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AzureSqlConnection"));
+    // Ver consultas SQL ejecutadas en tiempo real
+    options.LogTo(Console.WriteLine, LogLevel.Information);
+    //Muestra los valores reales de los parámetros
+    options.EnableSensitiveDataLogging();
+    //Muestra errores internos detallados
+    options.EnableDetailedErrors();
+});
 
 // ----------------------
 //   Registro de servicios
 // ----------------------
 builder.Services.AddScoped<IEvaluationService, EvaluationService>();
 builder.Services.AddScoped<IOfferService, OfferService>();
-builder.Services.AddScoped<IOfferCategoryService, OfferCategoryService>();
+builder.Services.AddScoped<IOfferCategoryService, OfferCategoryService>(); // (X)
 builder.Services.AddScoped<IPostulationService, PostulationService>();
-builder.Services.AddScoped<IPostulationStatusService, PostulationStatusService>();
+builder.Services.AddScoped<IPostulationStatusService, PostulationStatusService>(); // (X)
 
 // ----------------------
 //   Registro de repositorios
 // ----------------------
 
-builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>(); // get, getById, 
-builder.Services.AddScoped<IOfferRepository, OfferRepository>(); // get, getById, 
-builder.Services.AddScoped<IOfferCategoryRepository, OfferCategoryRepository>(); // CORRECTO TODOS
-builder.Services.AddScoped<IPostulationRepository, PostulationRepository>(); // get, getById, 
-builder.Services.AddScoped<IPostulationStatusRepository, PostulationStatusRepository>(); // Malos: update
+builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>(); 
+builder.Services.AddScoped<IOfferRepository, OfferRepository>(); 
+builder.Services.AddScoped<IOfferCategoryRepository, OfferCategoryRepository>();
+builder.Services.AddScoped<IPostulationRepository, PostulationRepository>();  
+builder.Services.AddScoped<IPostulationStatusRepository, PostulationStatusRepository>(); 
 
 var app = builder.Build();
 

@@ -13,14 +13,14 @@ namespace TalentoLocal.Models
         public int Id { get; set; }
 
         [Column("name")]
-        public string? Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public List<Postulation> Postulations { get; set; } = new List<Postulation>();
 
         [Column("create_at")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-        [Column("update_at", TypeName = "timestamp")]
-        public DateTime? UpdatedAt { get; set; }
+        [Column("update_at")]
+        public DateTime UpdatedAt { get; set; }
     }
 }
