@@ -15,10 +15,9 @@ namespace TalentoLocal.Models
         [Column("name")]
         public string? Name { get; set; }
 
-        [JsonIgnore] //Delete this after created dto and mappers
-        public ICollection<Offer> Offers { get; set; } = new List<Offer>();
+        public List<Offer> Offers { get; set; } = new List<Offer>();
         
-        [Column("create_at", TypeName = "timestamp")]
+        [Column("create_at")]
         public DateTime? CreatedAt { get; set; }
 
         [Column("update_at", TypeName = "timestamp")]
