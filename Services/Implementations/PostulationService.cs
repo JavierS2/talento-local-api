@@ -1,3 +1,4 @@
+ï»¿using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using TalentoLocal.DTOs;
 using TalentoLocal.Mappers;
@@ -8,10 +9,12 @@ using TalentoLocal.Services.Interfaces;
 public class PostulationService : IPostulationService
 {
     private readonly IPostulationRepository _repository;
+    private readonly DbDevopsContext _context;
 
-    public PostulationService(IPostulationRepository repository)
+    public PostulationService(IPostulationRepository repository, DbDevopsContext context)
     {
         _repository = repository;
+        _context = context;
     }
 
     public async Task<IEnumerable<PostulationDTO>> GetAllAsync()
@@ -23,11 +26,11 @@ public class PostulationService : IPostulationService
     public async Task<PostulationDTO> GetByIdAsync(int id)
     {
         if (id <= 0)
-            throw new ArgumentException("El ID de la postulación no puede ser menor o igual a cero.");
+            throw new ArgumentException("El ID de la postulaciÃ³n no puede ser menor o igual a cero.");
 
         var entity = await _repository.GetByIdAsync(id);
         if (entity == null)
-            throw new KeyNotFoundException($"No se encontró ninguna postulación con el ID {id}.");
+            throw new KeyNotFoundException($"No se encontrÃ³ ninguna postulaciÃ³n con el ID {id}.");
 
         return PostulationMapper.ToDto(entity);
     }
@@ -35,46 +38,82 @@ public class PostulationService : IPostulationService
     public async Task<PostulationDTO> CreateAsync(PostulationDTO dto)
     {
         if (dto == null)
-            throw new ArgumentNullException(nameof(dto), "La postulación no puede ser nula.");
+            throw new ArgumentNullException(nameof(dto), "La postulaciÃ³n no puede ser nula.");
+
+
+        await ValidateForeignKeysAsync(dto);
 
         var entity = PostulationMapper.ToEntity(dto);
+
+
+        entity.CreatedAt = DateTime.Now;
+        entity.UpdatedAt = DateTime.Now;
+
         await _repository.AddAsync(entity);
         await _repository.SaveChangesAsync();
 
         return PostulationMapper.ToDto(entity);
     }
 
+
     public async Task<bool> UpdateAsync(int id, PostulationDTO dto)
     {
-        if (id <= 0)
-            throw new ArgumentException("El ID de la postulación no puede ser menor o igual a cero.");
-
         if (dto == null)
-            throw new ArgumentNullException(nameof(dto), "La postulación no puede ser nula.");
+            throw new ArgumentNullException(nameof(dto));
+
+        await ValidateForeignKeysAsync(dto);
 
         var existing = await _repository.GetByIdAsync(id);
+
         if (existing == null)
-            throw new KeyNotFoundException($"No se encontró ninguna postulación con el ID {id}.");
+            throw new KeyNotFoundException($"No existe la postulaciÃ³n con ID {id}.");
 
-        var entity = PostulationMapper.ToEntity(dto);
-        entity.Id = id;
+        // 3. Actualizar solo los campos que sÃ­ pueden cambiar
+        existing.UserId = dto.UserId;
+        existing.OfferId = dto.OfferId;
+        existing.DocumentFile = dto.DocumentFile;
+        existing.StatusId = dto.StatusId;
+        existing.UpdatedAt = DateTime.Now;
 
-        await _repository.UpdateAsync(entity);
+        // 4. Guardar
+        await _repository.UpdateAsync(existing);
         await _repository.SaveChangesAsync();
+
         return true;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
         if (id <= 0)
-            throw new ArgumentException("El ID de la postulación no puede ser menor o igual a cero.");
+            throw new ArgumentException("El ID de la postulaciÃ³n no puede ser menor o igual a cero.");
 
         var existing = await _repository.GetByIdAsync(id);
         if (existing == null)
-            throw new KeyNotFoundException($"No se encontró ninguna postulación con el ID {id}.");
+            throw new KeyNotFoundException($"No se encontrÃ³ ninguna postulaciÃ³n con el ID {id}.");
 
         await _repository.DeleteAsync(id);
         await _repository.SaveChangesAsync();
         return true;
+    }
+
+    private async Task ValidateForeignKeysAsync(PostulationDTO dto)
+    {
+        // Validar estado de la postulaciÃ³n
+        bool statusExists = await _context.PostulationStatus
+            .AnyAsync(p => p.Id == dto.StatusId);
+
+        if (!statusExists)
+            throw new ArgumentException(
+                $"El estado de la postulaciÃ³n con ID {dto.StatusId} no existe."
+            );
+
+        // Validar oferta
+        bool offerExists = await _context.Offers
+            .AnyAsync(o => o.Id == dto.OfferId);
+
+        if (!offerExists)
+            throw new ArgumentException(
+                $"La oferta con ID {dto.OfferId} no existe."
+            );
     }
 }
