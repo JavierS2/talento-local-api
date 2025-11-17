@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen();
 
 // Register DbContext using InMemory for local development/tests
 builder.Services.AddDbContext<DbDevopsContext>(options =>
-    options.UseInMemoryDatabase("TalentoLocalInMemory"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AzureSqlConnection")));
 
 // Register services
 builder.Services.AddScoped<IEvaluationService, EvaluationService>();

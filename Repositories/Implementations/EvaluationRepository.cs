@@ -1,21 +1,21 @@
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
 
-namespace TalentoLocal.Repositories.Implementations
+namespace TalentoLocal.Repositories
 {
     public class EvaluationRepository : IEvaluationRepository
     {
-        private readonly DbDevopsContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public EvaluationRepository(DbDevopsContext context)
+        public EvaluationRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        
         public async Task<IEnumerable<Evaluation>> GetAllAsync()
         {
             return await _context.Evaluations
@@ -41,6 +41,7 @@ namespace TalentoLocal.Repositories.Implementations
             return Task.CompletedTask;
         }
 
+        // 🔹 Eliminar una evaluación por ID
         public async Task DeleteAsync(int id)
         {
             var evaluation = await GetByIdAsync(id);
@@ -50,7 +51,7 @@ namespace TalentoLocal.Repositories.Implementations
             }
         }
 
-        public async Task SaveAsync()
+        public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
         }

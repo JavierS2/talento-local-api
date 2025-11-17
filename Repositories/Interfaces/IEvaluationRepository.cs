@@ -11,6 +11,6 @@ namespace TalentoLocal.Repositories.Interfaces
 		Task AddAsync(Evaluation evaluation);
 		Task UpdateAsync(Evaluation evaluation);
 		Task DeleteAsync(int id);
-		Task SaveAsync();
+		Task SaveChangesAsync();
 	}
 }

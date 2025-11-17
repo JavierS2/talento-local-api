@@ -8,7 +8,7 @@ namespace TalentoLocal.Services.Interfaces
     public interface IConvocationService
     {
         Task<int> AddConvocationAsync(Convocation convocation);
-        Task<IEnumerable<Convocation>> GetAllAsync();
+        Task<List<Convocation>> GetAllAsync();
         Task<Convocation?> GetByIdAsync(int id);
         Task<Convocation?> GetByStatusAsync(ConvocationStatus status);
         Task<IEnumerable<Convocation>> SearchByLocationAsync(string location);

@@ -15,6 +15,25 @@ namespace TalentoLocal.Controllers
         {
             _evaluationService = evaluationService;
         }
+        [HttpPost("Mockup")]
+        public async Task<ActionResult<int>> CreateMockup()
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            Evaluation eva = new Evaluation
+            {
+                PostulationId = 1,
+                EvaluatorId = 1,
+                Criteria = "Conocimientos técnicos, comunicación y resolución de problemas.",
+                Result = 4.5f,
+                Comments = "El candidato demostró un buen dominio técnico y habilidades comunicativas.",
+                EvaluationDate = DateTime.Now,
+                Status = EvaluationStatus.Evaluated
+            };
+
+            var evaluationId = await _evaluationService.AddEvaluationAsync(eva);
+            return CreatedAtAction(nameof(GetByStatus), new { id = evaluationId}, new { id = evaluationId });
+        }
 
         [HttpPost]
         public async Task<ActionResult<int>> Create([FromBody] Evaluation evaluation)

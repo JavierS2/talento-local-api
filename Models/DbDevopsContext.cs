@@ -49,6 +49,7 @@ public partial class DbDevopsContext : DbContext
             entity.HasOne(e => e.PublishingEntity)
                   .WithMany(p => p.Convocations)
                   .HasForeignKey(e => e.PublishingEntityId);
+
         });
 
         modelBuilder.Entity<Offer>(entity =>
@@ -70,9 +71,7 @@ public partial class DbDevopsContext : DbContext
                   .WithMany(c => c.Postulations)
                   .HasForeignKey(e => e.ConvocationId);
 
-            entity.HasOne(e => e.Evaluation)
-                  .WithOne(ev => ev.Postulation)
-                  .HasForeignKey<Evaluation>(ev => ev.PostulationId);
+
         });
 
         modelBuilder.Entity<Evaluation>(entity =>

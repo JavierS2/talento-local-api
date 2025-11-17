@@ -11,6 +11,6 @@ namespace TalentoLocal.Repositories.Interfaces
         Task AddAsync(Offer offer);
         Task UpdateAsync(Offer offer);
         Task DeleteAsync(int id);
-        Task SaveAsync();
+        Task SaveChangesAsync();
     }
 }

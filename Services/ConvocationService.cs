@@ -25,9 +25,14 @@ namespace TalentoLocal.Services
             return convocation.Id;
         }
 
-        public async Task<IEnumerable<Convocation>> GetAllAsync()
+        public async Task<List<Convocation>> GetAllAsync()
         {
-            return await _repo.GetAllAsync();
+            var exis = await _repo.GetAllAsync();
+            if (exis == null)
+            {
+                return [];
+            }
+            return exis;
         }
 
         public async Task<Convocation?> GetByIdAsync(int id)
