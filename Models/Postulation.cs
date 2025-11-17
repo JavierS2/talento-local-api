@@ -34,9 +34,9 @@ namespace TalentoLocal.Models
         public Evaluation? Evaluation { get; set; }
 
         [Column("create_at")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-        [Column("update_at", TypeName = "timestamp")]
-        public DateTime? UpdatedAt { get; set; }
+        [Column("update_at")]
+        public DateTime UpdatedAt { get; set; }
     }
 }

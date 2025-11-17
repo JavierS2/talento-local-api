@@ -1,18 +1,21 @@
+using Microsoft.EntityFrameworkCore;
 using TalentoLocal.DTOs;
+using TalentoLocal.Mappers;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
 using TalentoLocal.Services.Interfaces;
-using TalentoLocal.Mappers;
 
 namespace TalentoLocal.Services.Implementations
 {
     public class OfferService : IOfferService
     {
         private readonly IOfferRepository _repository;
+        private readonly DbDevopsContext _context;
 
-        public OfferService(IOfferRepository repository)
+        public OfferService(IOfferRepository repository, DbDevopsContext context)
         {
             _repository = repository;
+            _context = context;
         }
 
         // Obtener todas las ofertas (devuelve lista de DTOs)
@@ -33,6 +36,10 @@ namespace TalentoLocal.Services.Implementations
                 throw new ArgumentException("El ID de la oferta debe ser mayor a 0.");
 
             var offer = await _repository.GetByIdAsync(id);
+
+            if (offer == null)
+                throw new KeyNotFoundException($"No se encontró ningún oferta con el ID {id}.");
+
             return offer != null ? OfferMapper.ToDTO(offer) : null;
         }
 
@@ -43,7 +50,11 @@ namespace TalentoLocal.Services.Implementations
                 throw new ArgumentNullException(nameof(offerDTO));
 
             var offer = OfferMapper.ToEntity(offerDTO);
+
+            // 2. Validaciones internas
             ValidateOffer(offer);
+
+            await ValidateForeignKeysAsync(offerDTO);
 
             offer.CreatedAt = DateTime.Now;
             offer.UpdatedAt = DateTime.Now;
@@ -54,6 +65,22 @@ namespace TalentoLocal.Services.Implementations
             return OfferMapper.ToDTO(offer);
         }
 
+        private async Task ValidateForeignKeysAsync(OfferDTO dto)
+        {/*
+            // Validar empresa
+            bool companyExists = await _context.Companies.AnyAsync(c => c.Id == dto.CompanyId);
+            if (!companyExists)
+                throw new ArgumentException($"La empresa con ID {dto.CompanyId} no existe.");*/
+
+
+            // Validar categoría
+            bool categoryExists = await _context.OfferCategories.AnyAsync(c => c.Id == dto.CategoryId);
+            if (!categoryExists)
+                throw new ArgumentException($"La categoría con ID {dto.CategoryId} no existe.");
+        }
+
+
+
         // Actualizar oferta existente
         public async Task<bool> UpdateAsync(int id, OfferDTO offerDTO)
         {
@@ -62,14 +89,14 @@ namespace TalentoLocal.Services.Implementations
 
             var existing = await _repository.GetByIdAsync(id);
             if (existing == null)
-                return false;
+                throw new KeyNotFoundException($"No se encontró ningún oferta con el ID {id}.");
 
             var updatedOffer = OfferMapper.ToEntity(offerDTO);
             ValidateOffer(updatedOffer);
 
             // Actualizamos los campos modificables
             existing.Title = updatedOffer.Title;
-            existing.SubTitle = updatedOffer.SubTitle;
+            existing.SubTitle = string.IsNullOrWhiteSpace(updatedOffer.SubTitle) ? string.Empty : updatedOffer.SubTitle;
             existing.Description = updatedOffer.Description;
             existing.Modality = updatedOffer.Modality;
             existing.Salary = updatedOffer.Salary;
@@ -103,7 +130,7 @@ namespace TalentoLocal.Services.Implementations
 
             var existing = await _repository.GetByIdAsync(id);
             if (existing == null)
-                return false;
+                throw new KeyNotFoundException($"No se encontró ningún oferta con el ID {id}.");
 
             await _repository.DeleteAsync(id);
             await _repository.SaveChangesAsync();

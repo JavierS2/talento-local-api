@@ -24,7 +24,7 @@ public class PostulationStatusService : IPostulationStatusService
     {
         if (id <= 0)
             throw new ArgumentException("El ID del estado de postulación no puede ser menor o igual a cero.");
-
+    
         var entity = await _repository.GetByIdAsync(id);
         if (entity == null)
             throw new KeyNotFoundException($"No se encontró ningún estado de postulación con el ID {id}.");
@@ -41,11 +41,13 @@ public class PostulationStatusService : IPostulationStatusService
         if (string.IsNullOrWhiteSpace(dto.Name))
             throw new ArgumentException("El nombre del estado de postulación es obligatorio.");
 
-        var entity = PostulationStatusMapper.ToEntity(dto);
-        await _repository.AddAsync(entity);
+        var postulationStatus = PostulationStatusMapper.ToEntity(dto);
+        postulationStatus.CreatedAt = DateTime.Now;
+        postulationStatus.UpdatedAt = DateTime.Now;
+        await _repository.AddAsync(postulationStatus);
         await _repository.SaveChangesAsync();
 
-        var saved = await _repository.GetByIdAsync(entity.Id);
+        var saved = await _repository.GetByIdAsync(postulationStatus.Id);
         if (saved == null)
             throw new InvalidOperationException("Error al crear el estado de postulación: no se encontró después de guardar.");
 
@@ -67,13 +69,15 @@ public class PostulationStatusService : IPostulationStatusService
         if (string.IsNullOrWhiteSpace(dto.Name))
             throw new ArgumentException("El nombre del estado de postulación es obligatorio.");
 
-        var entity = PostulationStatusMapper.ToEntity(dto);
-        entity.Id = id;
+        existing.Name = dto.Name;
+        existing.UpdatedAt = DateTime.Now;
 
-        await _repository.UpdateAsync(entity);
+        await _repository.UpdateAsync(existing);
         await _repository.SaveChangesAsync();
+
         return true;
     }
+
 
     public async Task<bool> DeleteAsync(int id)
     {

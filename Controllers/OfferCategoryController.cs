@@ -36,16 +36,22 @@ namespace TalentoLocal.Controllers
             try
             {
                 var category = await _service.GetByIdAsync(id);
-                if (category == null)
-                    return NotFound(new { message = $"No se encontró la categoría con ID {id}." });
-
                 return Ok(category);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception)
             {
                 return StatusCode(500, new { message = "Ocurrió un error al obtener la categoría de oferta." });
             }
         }
+
 
 
         [HttpPost]

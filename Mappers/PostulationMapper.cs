@@ -28,7 +28,7 @@ namespace TalentoLocal.Mappers
                 UserId = dto.UserId,
                 OfferId = dto.OfferId,
                 DocumentFile = dto.DocumentFile,
-                StatusId = dto.StatusId ?? 0,
+                StatusId = dto.StatusId
             };
         }
     }

@@ -23,11 +23,11 @@ namespace TalentoLocal.Models
         public string Justification { get; set; } = string.Empty;
 
         [Required]
-        [Column("create_at", TypeName = "date")]
+        [Column("create_at")]
         public DateTime CreatedAt { get; set; }
 
         [Required]
-        [Column("update_at", TypeName = "date")]
+        [Column("update_at")]
         public DateTime UpdatedAt { get; set; }
     }
 }

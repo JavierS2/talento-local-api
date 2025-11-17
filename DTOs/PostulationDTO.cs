@@ -12,7 +12,7 @@ namespace TalentoLocal.DTOs
     [param: Required(ErrorMessage = "El documento es obligatorio.")]
     int DocumentFile,
 
-    int? StatusId,
+    int StatusId,
     string? StatusName
 );
 

@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using TalentoLocal.DTOs;
 using TalentoLocal.Mappers;
+using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
 using TalentoLocal.Services.Interfaces;
 
@@ -8,11 +10,14 @@ namespace TalentoLocal.Services.Implementations
     public class EvaluationService : IEvaluationService
     {
         private readonly IEvaluationRepository _repository;
+        private readonly DbDevopsContext _context;
 
-        public EvaluationService(IEvaluationRepository repository)
+        public EvaluationService(IEvaluationRepository repository, DbDevopsContext context)
         {
             _repository = repository;
+            _context = context;
         }
+        
 
         // Obtener todas las evaluaciones
         public async Task<List<EvaluationDTO>> GetAllAsync()
@@ -49,6 +54,9 @@ namespace TalentoLocal.Services.Implementations
             if (string.IsNullOrWhiteSpace(evaluationDTO.Justification))
                 throw new ArgumentException("La justificación es obligatoria.");
 
+            
+            await ValidateForeignKeysAsync(evaluationDTO);
+
             var entity = EvaluationMapper.ToEntity(evaluationDTO);
 
             entity.CreatedAt = DateTime.Now;
@@ -60,20 +68,30 @@ namespace TalentoLocal.Services.Implementations
             return EvaluationMapper.ToDTO(entity);
         }
 
+
         // Actualizar evaluación existente
         public async Task<bool> UpdateAsync(int id, EvaluationDTO evaluationDTO)
         {
             if (id <= 0)
                 throw new ArgumentException("El ID de la evaluación debe ser mayor a 0.");
 
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null)
-                throw new KeyNotFoundException($"No se encontró la evaluación con ID {id}.");
+            if (evaluationDTO == null)
+                throw new ArgumentNullException(nameof(evaluationDTO));
 
             if (string.IsNullOrWhiteSpace(evaluationDTO.Justification))
                 throw new ArgumentException("La justificación es obligatoria.");
 
+            
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null)
+                throw new KeyNotFoundException($"No se encontró la evaluación con ID {id}.");
+
+            
+            await ValidateForeignKeysAsync(evaluationDTO);
+
+  
             existing.Justification = evaluationDTO.Justification;
+            existing.PostulationId = evaluationDTO.PostulationId;
             existing.UpdatedAt = DateTime.Now;
 
             await _repository.UpdateAsync(existing);
@@ -82,7 +100,7 @@ namespace TalentoLocal.Services.Implementations
             return true;
         }
 
-        // Eliminar evaluación
+
         public async Task<bool> DeleteAsync(int id)
         {
             if (id <= 0)
@@ -97,5 +115,32 @@ namespace TalentoLocal.Services.Implementations
 
             return true;
         }
+
+        private async Task ValidateForeignKeysAsync(EvaluationDTO dto)
+        {
+            // Validar que la postulación exista
+            bool postulationExists = await _context.Postulations
+                .AnyAsync(p => p.Id == dto.PostulationId);
+
+            if (!postulationExists)
+                throw new ArgumentException($"La postulación con ID {dto.PostulationId} no existe.");
+
+            // Validar que NO exista ya una evaluación para esta postulación
+            bool alreadyEvaluated = await _context.Evaluations
+                .AnyAsync(e => e.PostulationId == dto.PostulationId);
+
+            if (alreadyEvaluated)
+                throw new ArgumentException(
+                    $"La postulación con ID {dto.PostulationId} ya tiene una evaluación registrada."
+                );
+        }
+
+
+
+
     }
+
+
+
+
 }
