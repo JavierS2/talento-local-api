@@ -65,14 +65,6 @@ public partial class DbDevopsContext : DbContext
             entity.ToTable("PostulationStatus", "TalentoLocal");
         });
 
-        modelBuilder.Entity<JobCategories>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK_JobCategories");
-            entity.ToTable("JobCategories", "TalentoLocal");
-        });
-
-
-
         OnModelCreatingPartial(modelBuilder);
     }
 

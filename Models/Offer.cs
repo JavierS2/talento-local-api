@@ -79,7 +79,7 @@ namespace TalentoLocal.Models
         public DateTime? ClosingDate { get; set; }
 
         [Required]
-        [Column("company_id")]
+        [Column("company_id")] // Cuardar con el grupo de gestión de usuarios
         public int CompanyId { get; set; }
 
         [Required]
@@ -97,5 +97,17 @@ namespace TalentoLocal.Models
 
         [Column("update_at", TypeName = "timestamp")]
         public DateTime? UpdatedAt { get; set; }
+
+        [Column("featured")] //
+        public Boolean? Featured { get; set; }
+
+        [Column("urgent")] //
+        public Boolean? Urgent { get; set; }
+
+        [Column("rating")] //
+        public float? Rating { get; set; }
+        
+
+
     }
 }
