@@ -1,0 +1,29 @@
+trigger:
+  - dev
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: Compilation
+    inputs:
+      command: 'build'
+      projects: '**/*.csproj'
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - task: DotNetCoreCLI@2
+    displayName: Publication
+    inputs:
+      command: 'publish'
+      publishWebProjects: true
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
+        
+  - task: AzureRmWebAppDeployment@5
+    displayName: Deploy
+    inputs:
+      ConnectionType: 'AzureRM'
+      appType: 'webAppLinux'
+      WebAppName: 'talentolocal'
+      packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+      DeploymentTypeLinux: 'oneDeploy'
