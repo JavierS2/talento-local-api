@@ -31,10 +31,9 @@ namespace TalentoLocal.Models
         [ForeignKey("StatusId")]
         public PostulationStatus? Status { get; set; }
 
-        [JsonIgnore]
         public Evaluation? Evaluation { get; set; }
 
-        [Column("create_at", TypeName = "timestamp")]
+        [Column("create_at")]
         public DateTime? CreatedAt { get; set; }
 
         [Column("update_at", TypeName = "timestamp")]

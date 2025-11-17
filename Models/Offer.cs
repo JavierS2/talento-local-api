@@ -89,10 +89,9 @@ namespace TalentoLocal.Models
         [ForeignKey("CategoryId")]
         public OfferCategory? Category { get; set; }
 
-        [JsonIgnore]
         public List<Postulation>? Postulations { get; set; }
 
-        [Column("create_at", TypeName = "timestamp")]
+        [Column("create_at")]
         public DateTime? CreatedAt { get; set; }
 
         [Column("update_at", TypeName = "timestamp")]
