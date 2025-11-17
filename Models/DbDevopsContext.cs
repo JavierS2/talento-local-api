@@ -29,6 +29,19 @@ public partial class DbDevopsContext : DbContext
             entity.Property(c => c.Name)
                   .IsRequired()
                   .HasMaxLength(100);
+            //Seeders
+            modelBuilder.Entity<OfferCategory>().HasData(
+                new OfferCategory { Id = 3, Name = "Tecnología" },
+                new OfferCategory { Id = 4, Name = "Administración" },
+                new OfferCategory { Id = 5, Name = "Salud" },
+                new OfferCategory { Id = 6, Name = "Educación" },
+                new OfferCategory { Id = 7, Name = "Marketing y Comunicación" },
+                new OfferCategory { Id = 8, Name = "Ingeniería" },
+                new OfferCategory { Id = 9, Name = "Ciencias Ambientales" },
+                new OfferCategory { Id = 10, Name = "Turismo y Hotelería" },
+                new OfferCategory { Id = 11, Name = "Logística y Operaciones" },
+                new OfferCategory { Id = 12, Name = "Arte y Cultura" }
+            );
 
             // Relación 1:N con Offer
             entity.HasMany(c => c.Offers)
