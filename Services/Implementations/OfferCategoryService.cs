@@ -1,99 +1,89 @@
-﻿using TalentoLocal.Models;
+﻿using System.Linq;
+using TalentoLocal.DTOs;
+using TalentoLocal.Mappers;
 using TalentoLocal.Repositories.Interfaces;
 using TalentoLocal.Services.Interfaces;
 
-namespace TalentoLocal.Services.Implementations
+public class OfferCategoryService : IOfferCategoryService
 {
-    public class OfferCategoryService : IOfferCategoryService
+    private readonly IOfferCategoryRepository _repository;
+
+    public OfferCategoryService(IOfferCategoryRepository repository)
     {
-        private readonly IOfferCategoryRepository _repository;
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    }
 
-        public OfferCategoryService(IOfferCategoryRepository repository)
-        {
-            _repository = repository;
-        }
+    public async Task<List<OfferCategoryDTO>> GetAllAsync()
+    {
+        var entities = await _repository.GetAllAsync();
+        return entities?.Select(OfferCategoryMapper.ToDto).ToList() ?? new List<OfferCategoryDTO>();
+    }
 
-        // Obtener todas las categorías
-        public async Task<List<OfferCategory>> GetAllAsync()
-        {
-            return await _repository.GetAllAsync();
-        }
+    public async Task<OfferCategoryDTO> GetByIdAsync(int id)
+    {
+        if (id <= 0)
+            throw new ArgumentException("El ID de la categoría no puede ser menor o igual a cero.", nameof(id));
 
-        // Obtener categoría por ID
-        public async Task<OfferCategory?> GetByIdAsync(int id)
-        {
-            var category = await _repository.GetByIdAsync(id);
-            if (category == null)
-                throw new KeyNotFoundException("La categoría no existe.");
+        var entity = await _repository.GetByIdAsync(id);
+        if (entity == null)
+            throw new KeyNotFoundException($"No se encontró ninguna categoría de oferta con el ID {id}.");
 
-            return category;
-        }
+        return OfferCategoryMapper.ToDto(entity);
+    }
 
-        // Crear nueva categoría
-        public async Task<OfferCategory> CreateAsync(OfferCategory offerCategory)
-        {
-            if (string.IsNullOrWhiteSpace(offerCategory.Name))
-                throw new ArgumentException("El nombre de la categoría es obligatorio.");
+    public async Task<OfferCategoryDTO> CreateAsync(OfferCategoryDTO dto)
+    {
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto), "La categoría de oferta no puede ser nula.");
 
-            // Validar duplicado
-            var existing = await _repository.GetAllAsync();
-            bool alreadyExists = existing.Any(c =>
-                c.Name != null && c.Name.Trim().ToLower() == offerCategory.Name.Trim().ToLower());
+        if (string.IsNullOrWhiteSpace(dto.Name))
+            throw new ArgumentException("El nombre de la categoría es obligatorio.", nameof(dto.Name));
 
-            if (alreadyExists)
-                throw new InvalidOperationException("Ya existe una categoría con ese nombre.");
+        var entity = OfferCategoryMapper.ToEntity(dto);
 
-            offerCategory.CreatedAt = DateTime.Now;
-            offerCategory.UpdatedAt = DateTime.Now;
+        await _repository.AddAsync(entity);
+        await _repository.SaveChangesAsync();
 
-            await _repository.AddAsync(offerCategory);
-            await _repository.SaveChangesAsync();
+        // EF Core asigna automáticamente el ID después del SaveChangesAsync
+        return OfferCategoryMapper.ToDto(entity);
+    }
 
-            return offerCategory;
-        }
+    public async Task<bool> UpdateAsync(int id, OfferCategoryDTO dto)
+    {
+        if (id <= 0)
+            throw new ArgumentException("El ID de la categoría no puede ser menor o igual a cero.", nameof(id));
 
-        // Actualizar categoría existente
-        public async Task<bool> UpdateAsync(int id, OfferCategory offerCategory)
-        {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null)
-                throw new KeyNotFoundException("La categoría no existe.");
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto), "La categoría de oferta no puede ser nula.");
 
-            if (string.IsNullOrWhiteSpace(offerCategory.Name))
-                throw new ArgumentException("El nombre de la categoría es obligatorio.");
+        if (string.IsNullOrWhiteSpace(dto.Name))
+            throw new ArgumentException("El nombre de la categoría es obligatorio.", nameof(dto.Name));
 
-            // Validar duplicado si cambia el nombre
-            if (!string.Equals(existing.Name?.Trim(), offerCategory.Name?.Trim(), StringComparison.OrdinalIgnoreCase))
-            {
-                var allCategories = await _repository.GetAllAsync();
-                bool duplicate = allCategories.Any(c =>
-                    c.Name != null && c.Name.Trim().ToLower() == offerCategory.Name.Trim().ToLower() && c.Id != id);
+        var existing = await _repository.GetByIdAsync(id);
+        if (existing == null)
+            throw new KeyNotFoundException($"No se encontró ninguna categoría de oferta con el ID {id}.");
 
-                if (duplicate)
-                    throw new InvalidOperationException("Ya existe otra categoría con ese nombre.");
-            }
+        // actualiza sólo lo necesario
+        existing.Name = dto.Name;
 
-            // Actualizar campos
-            existing.Name = offerCategory.Name;
-            existing.UpdatedAt = DateTime.Now;
+        await _repository.UpdateAsync(existing);
+        await _repository.SaveChangesAsync();
 
-            await _repository.UpdateAsync(existing);
-            await _repository.SaveChangesAsync();
+        return true;
+    }
 
-            return true;
-        }
+    public async Task<bool> DeleteAsync(int id)
+    {
+        if (id <= 0)
+            throw new ArgumentException("El ID de la categoría no puede ser menor o igual a cero.", nameof(id));
 
-        // Eliminar categoría
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null)
-                throw new KeyNotFoundException("La categoría no existe.");
+        var existing = await _repository.GetByIdAsync(id);
+        if (existing == null)
+            throw new KeyNotFoundException($"No se encontró ninguna categoría de oferta con el ID {id}.");
 
-            await _repository.DeleteAsync(id);
-            await _repository.SaveChangesAsync();
+        await _repository.DeleteAsync(id);
+        await _repository.SaveChangesAsync();
 
-            return true;
-        }
+        return true;
     }
 }

@@ -36,11 +36,12 @@ builder.Services.AddScoped<IPostulationStatusService, PostulationStatusService>(
 // ----------------------
 //   Registro de repositorios
 // ----------------------
-builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>();
-builder.Services.AddScoped<IOfferRepository, OfferRepository>();
-builder.Services.AddScoped<IOfferCategoryRepository, OfferCategoryRepository>();
-builder.Services.AddScoped<IPostulationRepository, PostulationRepository>();
-builder.Services.AddScoped<IPostulationStatusRepository, PostulationStatusRepository>();
+
+builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>(); // get, getById, 
+builder.Services.AddScoped<IOfferRepository, OfferRepository>(); // get, getById, 
+builder.Services.AddScoped<IOfferCategoryRepository, OfferCategoryRepository>(); // CORRECTO TODOS
+builder.Services.AddScoped<IPostulationRepository, PostulationRepository>(); // get, getById, 
+builder.Services.AddScoped<IPostulationStatusRepository, PostulationStatusRepository>(); // Malos: update
 
 var app = builder.Build();
 

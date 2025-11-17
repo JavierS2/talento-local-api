@@ -1,4 +1,5 @@
-using TalentoLocal.Models;
+using TalentoLocal.DTOs;
+using TalentoLocal.Mappers;
 using TalentoLocal.Repositories.Interfaces;
 using TalentoLocal.Services.Interfaces;
 
@@ -14,13 +15,17 @@ namespace TalentoLocal.Services.Implementations
         }
 
         // Obtener todas las evaluaciones
-        public async Task<List<Evaluation>> GetAllAsync()
+        public async Task<List<EvaluationDTO>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            var evaluations = await _repository.GetAllAsync();
+
+            return evaluations
+                .Select(e => EvaluationMapper.ToDTO(e))
+                .ToList();
         }
 
         // Obtener evaluación por ID
-        public async Task<Evaluation?> GetByIdAsync(int id)
+        public async Task<EvaluationDTO?> GetByIdAsync(int id)
         {
             if (id <= 0)
                 throw new ArgumentException("El ID de la evaluación debe ser mayor a 0.");
@@ -29,32 +34,34 @@ namespace TalentoLocal.Services.Implementations
             if (evaluation == null)
                 throw new KeyNotFoundException($"No se encontró la evaluación con ID {id}.");
 
-            return evaluation;
+            return EvaluationMapper.ToDTO(evaluation);
         }
 
         // Crear nueva evaluación
-        public async Task<Evaluation> CreateAsync(Evaluation evaluation)
+        public async Task<EvaluationDTO> CreateAsync(EvaluationDTO evaluationDTO)
         {
-            if (evaluation == null)
-                throw new ArgumentNullException(nameof(evaluation));
+            if (evaluationDTO == null)
+                throw new ArgumentNullException(nameof(evaluationDTO));
 
-            if (evaluation.PostulationId <= 0)
+            if (evaluationDTO.PostulationId <= 0)
                 throw new ArgumentException("El campo 'PostulationId' es obligatorio y debe ser válido.");
 
-            if (string.IsNullOrWhiteSpace(evaluation.Justification))
+            if (string.IsNullOrWhiteSpace(evaluationDTO.Justification))
                 throw new ArgumentException("La justificación es obligatoria.");
 
-            evaluation.CreatedAt = DateTime.Now;
-            evaluation.UpdatedAt = DateTime.Now;
+            var entity = EvaluationMapper.ToEntity(evaluationDTO);
 
-            await _repository.AddAsync(evaluation);
+            entity.CreatedAt = DateTime.Now;
+            entity.UpdatedAt = DateTime.Now;
+
+            await _repository.AddAsync(entity);
             await _repository.SaveChangesAsync();
 
-            return evaluation;
+            return EvaluationMapper.ToDTO(entity);
         }
 
         // Actualizar evaluación existente
-        public async Task<bool> UpdateAsync(int id, Evaluation evaluation)
+        public async Task<bool> UpdateAsync(int id, EvaluationDTO evaluationDTO)
         {
             if (id <= 0)
                 throw new ArgumentException("El ID de la evaluación debe ser mayor a 0.");
@@ -63,11 +70,10 @@ namespace TalentoLocal.Services.Implementations
             if (existing == null)
                 throw new KeyNotFoundException($"No se encontró la evaluación con ID {id}.");
 
-            if (string.IsNullOrWhiteSpace(evaluation.Justification))
+            if (string.IsNullOrWhiteSpace(evaluationDTO.Justification))
                 throw new ArgumentException("La justificación es obligatoria.");
 
-            // Actualizamos los campos permitidos
-            existing.Justification = evaluation.Justification;
+            existing.Justification = evaluationDTO.Justification;
             existing.UpdatedAt = DateTime.Now;
 
             await _repository.UpdateAsync(existing);

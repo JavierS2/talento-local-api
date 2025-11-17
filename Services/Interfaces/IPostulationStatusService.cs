@@ -1,13 +1,13 @@
-﻿using TalentoLocal.Models;
+﻿using TalentoLocal.DTOs;
 
 namespace TalentoLocal.Services.Interfaces
 {
     public interface IPostulationStatusService
     {
-        Task<List<PostulationStatus>> GetAllAsync();
-        Task<PostulationStatus> CreateAsync(PostulationStatus postulationStatus);
-        Task<PostulationStatus?> GetByIdAsync(int id);
-        Task<bool> UpdateAsync(int id, PostulationStatus postulationStatus);
+        Task<List<PostulationStatusDTO>> GetAllAsync();
+        Task<PostulationStatusDTO> CreateAsync(PostulationStatusDTO postulationStatusDTO);
+        Task<PostulationStatusDTO> GetByIdAsync(int id);
+        Task<bool> UpdateAsync(int id, PostulationStatusDTO postulationStatusDTO);
         Task<bool> DeleteAsync(int id);
     }
 }
