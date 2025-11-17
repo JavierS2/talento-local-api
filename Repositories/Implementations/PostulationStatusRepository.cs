@@ -1,42 +1,40 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
 
-namespace TalentoLocal.Repositories
+namespace TalentoLocal.Repositories.Implementations
 {
     public class PostulationStatusRepository : IPostulationStatusRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DbDevopsContext _context;
 
-        public PostulationStatusRepository(ApplicationDbContext context)
+        public PostulationStatusRepository(DbDevopsContext context)
         {
             _context = context;
         }
 
         public async Task<IEnumerable<PostulationStatus>> GetAllAsync()
         {
-            return await _context.PostulationsStatus
+            return await _context.PostulationStatus
                 .Include(s => s.Postulations)
                 .ToListAsync();
         }
 
         public async Task<PostulationStatus?> GetByIdAsync(int id)
         {
-            return await _context.PostulationsStatus
+            return await _context.PostulationStatus
                 .Include(s => s.Postulations)
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task AddAsync(PostulationStatus postulationStatus)
         {
-            await _context.PostulationsStatus.AddAsync(postulationStatus);
+            await _context.PostulationStatus.AddAsync(postulationStatus);
         }
 
         public Task UpdateAsync(PostulationStatus postulationStatus)
         {
-            _context.PostulationsStatus.Update(postulationStatus);
+            _context.PostulationStatus.Update(postulationStatus);
             return Task.CompletedTask;
         }
 
@@ -45,7 +43,7 @@ namespace TalentoLocal.Repositories
             var status = await GetByIdAsync(id);
             if (status != null)
             {
-                _context.PostulationsStatus.Remove(status);
+                _context.PostulationStatus.Remove(status);
             }
         }
 

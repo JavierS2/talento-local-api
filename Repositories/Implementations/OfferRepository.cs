@@ -1,16 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace TalentoLocal.Repositories
+namespace TalentoLocal.Repositories.Implementations
 {
     public class OfferRepository : IOfferRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DbDevopsContext _context;
 
-        public OfferRepository(ApplicationDbContext context)
+        public OfferRepository(DbDevopsContext context)
         {
             _context = context;
         }

@@ -1,16 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
 
-namespace TalentoLocal.Repositories
+namespace TalentoLocal.Repositories.Implementations
 {
     public class EvaluationRepository : IEvaluationRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DbDevopsContext _context;
 
-        public EvaluationRepository(ApplicationDbContext context)
+        public EvaluationRepository(DbDevopsContext context)
         {
             _context = context;
         }

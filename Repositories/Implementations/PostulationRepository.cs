@@ -1,16 +1,14 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
 
-namespace TalentoLocal.Repositories
+namespace TalentoLocal.Repositories.Implementations
 {
     public class PostulationRepository : IPostulationRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DbDevopsContext _context;
 
-        public PostulationRepository(ApplicationDbContext context)
+        public PostulationRepository(DbDevopsContext context)
         {
             _context = context;
         }
