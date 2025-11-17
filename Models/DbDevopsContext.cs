@@ -31,16 +31,16 @@ public partial class DbDevopsContext : DbContext
                   .HasMaxLength(100);
             //Seeders
             modelBuilder.Entity<OfferCategory>().HasData(
-                new OfferCategory { Id = 3, Name = "Tecnología" },
-                new OfferCategory { Id = 4, Name = "Administración" },
-                new OfferCategory { Id = 5, Name = "Salud" },
-                new OfferCategory { Id = 6, Name = "Educación" },
-                new OfferCategory { Id = 7, Name = "Marketing y Comunicación" },
-                new OfferCategory { Id = 8, Name = "Ingeniería" },
-                new OfferCategory { Id = 9, Name = "Ciencias Ambientales" },
-                new OfferCategory { Id = 10, Name = "Turismo y Hotelería" },
-                new OfferCategory { Id = 11, Name = "Logística y Operaciones" },
-                new OfferCategory { Id = 12, Name = "Arte y Cultura" }
+                new OfferCategory { Id = 3, Name = "Tecnología", CreatedAt = DateTime.Now },
+                new OfferCategory { Id = 4, Name = "Administración", CreatedAt = DateTime.Now },
+                new OfferCategory { Id = 5, Name = "Salud", CreatedAt = DateTime.Now },
+                new OfferCategory { Id = 6, Name = "Educación", CreatedAt = DateTime.Now },
+                new OfferCategory { Id = 7, Name = "Marketing y Comunicación", CreatedAt = DateTime.Now },
+                new OfferCategory { Id = 8, Name = "Ingeniería", CreatedAt = DateTime.Now },
+                new OfferCategory { Id = 9, Name = "Ciencias Ambientales", CreatedAt = DateTime.Now },
+                new OfferCategory { Id = 10, Name = "Turismo y Hotelería", CreatedAt = DateTime.Now },
+                new OfferCategory { Id = 11, Name = "Logística y Operaciones", CreatedAt = DateTime.Now },
+                new OfferCategory { Id = 12, Name = "Arte y Cultura", CreatedAt = DateTime.Now }
             );
 
             // Relación 1:N con Offer
