@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace TalentoLocal.Models
 {
@@ -87,8 +88,9 @@ namespace TalentoLocal.Models
 
         [ForeignKey("CategoryId")]
         public OfferCategory? Category { get; set; }
-        
-        public ICollection<Postulation>? Postulations { get; set; }
+
+        [JsonIgnore]
+        public List<Postulation>? Postulations { get; set; }
 
         [Column("create_at", TypeName = "timestamp")]
         public DateTime? CreatedAt { get; set; }

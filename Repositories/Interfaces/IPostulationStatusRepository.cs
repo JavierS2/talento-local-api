@@ -6,7 +6,7 @@ namespace TalentoLocal.Repositories.Interfaces
 {
     public interface IPostulationStatusRepository
     {
-        Task<IEnumerable<PostulationStatus>> GetAllAsync();
+        Task<List<PostulationStatus>> GetAllAsync();
         Task<PostulationStatus?> GetByIdAsync(int id);
         Task AddAsync(PostulationStatus postulationStatus);
         Task UpdateAsync(PostulationStatus postulationStatus);

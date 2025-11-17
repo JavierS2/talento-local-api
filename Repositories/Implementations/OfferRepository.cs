@@ -13,7 +13,7 @@ namespace TalentoLocal.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Offer>> GetAllAsync()
+        public async Task<List<Offer>> GetAllAsync()
         {
             return await _context.Offers
                 .Include(o => o.Category)

@@ -21,7 +21,8 @@ builder.Services.AddSwaggerGen();
 
 // DbContext
 builder.Services.AddDbContext<DbDevopsContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AzureSqlConnection")));
+    options.UseInMemoryDatabase("TalentoLocalInMemory"));
+    //options.UseSqlServer(builder.Configuration.GetConnectionString("AzureSqlConnection")));
 
 // ----------------------
 //   Registro de servicios

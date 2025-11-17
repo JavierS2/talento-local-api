@@ -6,7 +6,7 @@ namespace TalentoLocal.Repositories.Interfaces
 {
     public interface IOfferCategoryRepository
     {
-        Task<IEnumerable<OfferCategory>> GetAllAsync();
+        Task<List<OfferCategory>> GetAllAsync();
         Task<OfferCategory?> GetByIdAsync(int id);
         Task AddAsync(OfferCategory offerCategory);
         Task UpdateAsync(OfferCategory offerCategory);

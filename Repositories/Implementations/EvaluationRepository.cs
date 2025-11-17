@@ -14,7 +14,7 @@ namespace TalentoLocal.Repositories.Implementations
         }
 
         
-        public async Task<IEnumerable<Evaluation>> GetAllAsync()
+        public async Task<List<Evaluation>> GetAllAsync()
         {
             return await _context.Evaluations
                 .Include(e => e.Postulation)

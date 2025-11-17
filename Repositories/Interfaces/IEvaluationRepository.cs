@@ -4,7 +4,7 @@ namespace TalentoLocal.Repositories.Interfaces
 {
 	public interface IEvaluationRepository
 	{
-		Task<IEnumerable<Evaluation>> GetAllAsync();
+		Task<List<Evaluation>> GetAllAsync();
 		Task<Evaluation?> GetByIdAsync(int id);
 		Task AddAsync(Evaluation evaluation);
 		Task UpdateAsync(Evaluation evaluation);
