@@ -22,6 +22,7 @@ steps:
   - task: AzureRmWebAppDeployment@5
     displayName: Deploy
     inputs:
+      ConnectedServiceName: 'Azure for Students(575d77f4-8539-48ac-8107-28a115f8ab06)'
       ConnectionType: 'AzureRM'
       appType: 'webAppLinux'
       WebAppName: 'talentolocal'
