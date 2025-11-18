@@ -30,18 +30,21 @@ public partial class DbDevopsContext : DbContext
                   .IsRequired()
                   .HasMaxLength(100);
             //Seeders
+            var seedDate = new DateTime(2024, 01, 01);
+
             modelBuilder.Entity<OfferCategory>().HasData(
-                new OfferCategory { Id = 3, Name = "Tecnología", CreatedAt = DateTime.Now },
-                new OfferCategory { Id = 4, Name = "Administración", CreatedAt = DateTime.Now },
-                new OfferCategory { Id = 5, Name = "Salud", CreatedAt = DateTime.Now },
-                new OfferCategory { Id = 6, Name = "Educación", CreatedAt = DateTime.Now },
-                new OfferCategory { Id = 7, Name = "Marketing y Comunicación", CreatedAt = DateTime.Now },
-                new OfferCategory { Id = 8, Name = "Ingeniería", CreatedAt = DateTime.Now },
-                new OfferCategory { Id = 9, Name = "Ciencias Ambientales", CreatedAt = DateTime.Now },
-                new OfferCategory { Id = 10, Name = "Turismo y Hotelería", CreatedAt = DateTime.Now },
-                new OfferCategory { Id = 11, Name = "Logística y Operaciones", CreatedAt = DateTime.Now },
-                new OfferCategory { Id = 12, Name = "Arte y Cultura", CreatedAt = DateTime.Now }
+                new OfferCategory { Id = 3, Name = "Tecnología", CreatedAt = seedDate },
+                new OfferCategory { Id = 4, Name = "Administración", CreatedAt = seedDate },
+                new OfferCategory { Id = 5, Name = "Salud", CreatedAt = seedDate },
+                new OfferCategory { Id = 6, Name = "Educación", CreatedAt = seedDate },
+                new OfferCategory { Id = 7, Name = "Marketing y Comunicación", CreatedAt = seedDate },
+                new OfferCategory { Id = 8, Name = "Ingeniería", CreatedAt = seedDate },
+                new OfferCategory { Id = 9, Name = "Ciencias Ambientales", CreatedAt = seedDate },
+                new OfferCategory { Id = 10, Name = "Turismo y Hotelería", CreatedAt = seedDate },
+                new OfferCategory { Id = 11, Name = "Logística y Operaciones", CreatedAt = seedDate },
+                new OfferCategory { Id = 12, Name = "Arte y Cultura", CreatedAt = seedDate }
             );
+
 
             // Relación 1:N con Offer
             entity.HasMany(c => c.Offers)
