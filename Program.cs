@@ -6,6 +6,7 @@ using TalentoLocal.Repositories.Interfaces;
 using TalentoLocal.Services.Implementations;
 using TalentoLocal.Services.Interfaces;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -39,6 +40,8 @@ builder.Services.AddScoped<IOfferService, OfferService>();
 builder.Services.AddScoped<IOfferCategoryService, OfferCategoryService>(); // (X)
 builder.Services.AddScoped<IPostulationService, PostulationService>();
 builder.Services.AddScoped<IPostulationStatusService, PostulationStatusService>(); // (X)
+builder.Services.AddScoped<IBlobStorageService, AzureBlobStorageService>();
+
 
 // ----------------------
 //   Registro de repositorios

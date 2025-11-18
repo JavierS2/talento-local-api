@@ -11,10 +11,12 @@ namespace TalentoLocal.Controllers
     public class PostulationController : ControllerBase
     {
         private readonly IPostulationService _service;
+        private readonly IBlobStorageService _blob;
 
-        public PostulationController(IPostulationService service)
+        public PostulationController(IPostulationService service, IBlobStorageService blob)
         {
             _service = service;
+            _blob = blob;
         }
 
         [HttpGet]
@@ -46,8 +48,9 @@ namespace TalentoLocal.Controllers
             }
         }
 
+        // 🟩 POST: Acepta archivos, se debe usar [FromForm]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] PostulationDTO dto)
+        public async Task<IActionResult> Create([FromForm] PostulationDTO dto)
         {
             try
             {
@@ -68,8 +71,9 @@ namespace TalentoLocal.Controllers
             }
         }
 
+        // 🟩 PUT: También debe aceptar archivos → [FromForm]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] PostulationDTO dto)
+        public async Task<IActionResult> Update(int id, [FromForm] PostulationDTO dto)
         {
             try
             {
@@ -115,5 +119,25 @@ namespace TalentoLocal.Controllers
                 return StatusCode(500, new { message = "Ocurrió un error al eliminar la postulación." });
             }
         }
+        [HttpGet("{id}/document")]
+        public async Task<IActionResult> GetDocumentUrl(int id)
+        {
+            // 1. Obtener la postulación
+            var entity = await _service.GetByIdAsync(id);
+
+            if (entity == null)
+                return NotFound(new { message = "No existe la postulación." });
+
+            // 2. entity.DocumentFile contiene el blobName (ej: "abc123.pdf")
+
+            if (string.IsNullOrWhiteSpace(entity.DocumentFileUrl))
+                return BadRequest(new { message = "La postulación no tiene un documento asociado." });
+
+            // 3. Generar SAS URL por 20 min
+            string sasUrl = _blob.GenerateSasUrl(entity.DocumentFileUrl);
+
+            return Ok(new { url = sasUrl });
+        }
+
     }
 }

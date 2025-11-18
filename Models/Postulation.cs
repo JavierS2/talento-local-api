@@ -23,7 +23,8 @@ namespace TalentoLocal.Models
         public Offer Offer { get; set; } = null!;
 
         [Column("document_file")]
-        public int DocumentFile { get; set; }
+        public string DocumentFile { get; set; } = string.Empty;
+
 
         [Column("status_id")]
         public int StatusId { get; set; }

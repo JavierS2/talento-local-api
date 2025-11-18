@@ -4,26 +4,32 @@ using TalentoLocal.DTOs;
 using TalentoLocal.Mappers;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
+using TalentoLocal.Services.Implementations;
 using TalentoLocal.Services.Interfaces;
 
 public class PostulationService : IPostulationService
 {
     private readonly IPostulationRepository _repository;
     private readonly DbDevopsContext _context;
+    private readonly IBlobStorageService _blobStorageService;
 
-    public PostulationService(IPostulationRepository repository, DbDevopsContext context)
+    public PostulationService(
+        IPostulationRepository repository,
+        DbDevopsContext context,
+        IBlobStorageService blobStorageService)
     {
         _repository = repository;
         _context = context;
+        _blobStorageService = blobStorageService;
     }
 
-    public async Task<IEnumerable<PostulationDTO>> GetAllAsync()
+    public async Task<IEnumerable<PostulationResponseDTO>> GetAllAsync()
     {
         var entities = await _repository.GetAllAsync();
-        return entities?.Select(PostulationMapper.ToDto).ToList() ?? new List<PostulationDTO>();
+        return entities?.Select(PostulationMapper.ToDto).ToList() ?? new List<PostulationResponseDTO>();
     }
 
-    public async Task<PostulationDTO> GetByIdAsync(int id)
+    public async Task<PostulationResponseDTO> GetByIdAsync(int id)
     {
         if (id <= 0)
             throw new ArgumentException("El ID de la postulación no puede ser menor o igual a cero.");
@@ -35,25 +41,37 @@ public class PostulationService : IPostulationService
         return PostulationMapper.ToDto(entity);
     }
 
-    public async Task<PostulationDTO> CreateAsync(PostulationDTO dto)
+    public async Task<PostulationResponseDTO> CreateAsync(PostulationDTO dto)
     {
         if (dto == null)
             throw new ArgumentNullException(nameof(dto), "La postulación no puede ser nula.");
 
-
+ 
         await ValidateForeignKeysAsync(dto);
 
-        var entity = PostulationMapper.ToEntity(dto);
+        // 1. Subir archivo a Azure Blob Storage y obtener el blobName
+        string blobName = await _blobStorageService.UploadAsync(dto.DocumentFile);
 
+        // 2. Crear la entidad usando el blobName
+        var entity = PostulationMapper.ToEntity(dto, blobName);
 
         entity.CreatedAt = DateTime.Now;
         entity.UpdatedAt = DateTime.Now;
 
+        // 3. Guardar en BD
         await _repository.AddAsync(entity);
         await _repository.SaveChangesAsync();
 
-        return PostulationMapper.ToDto(entity);
+        // 4. Generar SAS temporal para devolver al frontend
+        string sasUrl = _blobStorageService.GenerateSasUrl(entity.DocumentFile);
+
+        // 5. Mapear a DTO de salida
+        var response = PostulationMapper.ToDto(entity);
+        response.DocumentFileUrl = sasUrl;
+
+        return response;
     }
+
 
 
     public async Task<bool> UpdateAsync(int id, PostulationDTO dto)
@@ -68,19 +86,32 @@ public class PostulationService : IPostulationService
         if (existing == null)
             throw new KeyNotFoundException($"No existe la postulación con ID {id}.");
 
-        // 3. Actualizar solo los campos que sí pueden cambiar
+        // Actualizar datos base
         existing.UserId = dto.UserId;
         existing.OfferId = dto.OfferId;
-        existing.DocumentFile = dto.DocumentFile;
         existing.StatusId = dto.StatusId;
+
+        // ¿El usuario subió un nuevo documento?
+        if (dto.DocumentFile != null)
+        {
+            // 1. Subir nuevo archivo
+            string newBlobName = await _blobStorageService.UploadAsync(dto.DocumentFile);
+
+            // 2. Reemplazar en base de datos
+            existing.DocumentFile = newBlobName;
+
+            // (Opcional) borrar el archivo anterior en Azure
+            // await _blobStorageService.DeleteAsync(existing.DocumentFile);
+        }
+
         existing.UpdatedAt = DateTime.Now;
 
-        // 4. Guardar
         await _repository.UpdateAsync(existing);
         await _repository.SaveChangesAsync();
 
         return true;
     }
+
 
     public async Task<bool> DeleteAsync(int id)
     {

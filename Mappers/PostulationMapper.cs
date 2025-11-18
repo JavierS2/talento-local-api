@@ -5,29 +5,30 @@ namespace TalentoLocal.Mappers
     public static class PostulationMapper
     {
         // 🔹 Convierte de entidad → DTO
-        public static PostulationDTO ToDto(Postulation postulation)
+        public static PostulationResponseDTO ToDto(Postulation postulation)
         {
             if (postulation == null)
                 throw new ArgumentNullException(nameof(postulation));
 
-            return new PostulationDTO
-            (
-                postulation.UserId,
-                postulation.OfferId,
-                postulation.DocumentFile,
-                postulation.StatusId,
-                postulation.Status?.Name // obtiene el nombre del estado si existe
-            );
+            return new PostulationResponseDTO
+            {
+                UserId = postulation.UserId,
+                OfferId = postulation.OfferId,
+                DocumentFileUrl = postulation.DocumentFile,
+                StatusId = postulation.StatusId,
+                StatusName = postulation.Status?.Name
+            };
         }
 
+
         // 🔹 Convierte de DTO → entidad
-        public static Postulation ToEntity(PostulationDTO dto)
+        public static Postulation ToEntity(PostulationDTO dto, string documentUrl)
         {
             return new Postulation
             {
                 UserId = dto.UserId,
                 OfferId = dto.OfferId,
-                DocumentFile = dto.DocumentFile,
+                DocumentFile = documentUrl,
                 StatusId = dto.StatusId
             };
         }
