@@ -1,19 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace TalentoLocal.DTOs
 {
-    public record PostulationDTO(
-    [param: Required(ErrorMessage = "El usuario es obligatorio.")]
-    int UserId,
+    public record PostulationDTO
+    {
+        [Required(ErrorMessage = "El usuario es obligatorio.")]
+        public int UserId { get; set; }
 
-    [param: Required(ErrorMessage = "La oferta es obligatoria.")]
-    int OfferId,
+        [Required(ErrorMessage = "La oferta es obligatoria.")]
+        public int OfferId { get; set; }
 
-    [param: Required(ErrorMessage = "El documento es obligatorio.")]
-    int DocumentFile,
+        [Required(ErrorMessage = "El documento es obligatorio.")]
+        public IFormFile DocumentFile { get; set; } = default!;
 
-    int StatusId,
-    string? StatusName
-);
+        public int StatusId { get; set; }
+        public string? StatusName { get; set; }
+    }
+
+    public class PostulationResponseDTO
+    {
+        public int UserId { get; set; }
+        public int OfferId { get; set; }
+        public string DocumentFileUrl { get; set; } = string.Empty;
+        public int StatusId { get; set; }
+        public string? StatusName { get; set; }
+    }
 
 }
