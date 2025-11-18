@@ -1,16 +1,14 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TalentoLocal.Models;
-using TalentoLocal.Models.enums;
+using TalentoLocal.DTOs;
 
 namespace TalentoLocal.Services.Interfaces
 {
 	public interface IEvaluationService
 	{
-		Task<int> AddEvaluationAsync(Evaluation evaluation);
-		Task<IEnumerable<Evaluation>> GetAllAsync();
-		Task<Evaluation?> GetByStatusAsync(EvaluationStatus status);
-		Task<bool> UpdateAsync(int id, Evaluation evaluation);
+		Task<List<EvaluationDTO>> GetAllAsync();
+		Task<EvaluationDTO> CreateAsync(EvaluationDTO evaluationDTO);
+        Task<EvaluationDTO?> GetByIdAsync(int id);
+        Task<bool> UpdateAsync(int id, EvaluationDTO evaluationDTO);
 		Task<bool> DeleteAsync(int id);
 	}
 }

@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
+
 namespace TalentoLocal.Repositories.Implementations
 {
     public class OfferRepository : IOfferRepository
@@ -15,14 +13,20 @@ namespace TalentoLocal.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Offer>> GetAllAsync()
+        public async Task<List<Offer>> GetAllAsync()
         {
-            return await _context.Offers.ToListAsync();
+            return await _context.Offers
+                .Include(o => o.Category)
+                .Include(o => o.Postulations)
+                .ToListAsync();
         }
 
         public async Task<Offer?> GetByIdAsync(int id)
         {
-            return await _context.Offers.FirstOrDefaultAsync(o => o.Id == id);
+            return await _context.Offers
+                .Include(o => o.Category)
+                .Include(o => o.Postulations)
+                .FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task AddAsync(Offer offer)
@@ -45,7 +49,7 @@ namespace TalentoLocal.Repositories.Implementations
             }
         }
 
-        public async Task SaveAsync()
+        public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
         }

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories.Interfaces;
@@ -19,15 +16,17 @@ namespace TalentoLocal.Repositories.Implementations
         public async Task<IEnumerable<Postulation>> GetAllAsync()
         {
             return await _context.Postulations
-                .Include(p => p.Convocation)
-                .Include(p => p.Evaluation)
+                .Include(p => p.Offer)                
+                .Include(p => p.Status)               
+                .Include(p => p.Evaluation)           
                 .ToListAsync();
         }
 
         public async Task<Postulation?> GetByIdAsync(int id)
         {
             return await _context.Postulations
-                .Include(p => p.Convocation)
+                .Include(p => p.Offer)
+                .Include(p => p.Status)
                 .Include(p => p.Evaluation)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -52,7 +51,7 @@ namespace TalentoLocal.Repositories.Implementations
             }
         }
 
-        public async Task SaveAsync()
+        public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
         }

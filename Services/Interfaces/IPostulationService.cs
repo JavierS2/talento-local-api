@@ -1,15 +1,13 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using TalentoLocal.Models;
+using TalentoLocal.DTOs;
 
 namespace TalentoLocal.Services.Interfaces
 {
     public interface IPostulationService
     {
-        Task<int> AddPostulationAsync(Postulation postulation);
-        Task<IEnumerable<Postulation>> GetAllAsync();
-        Task<Postulation?> GetByIdAsync(int id);
-        Task<bool> UpdateAsync(int id, Postulation postulation);
+        Task<IEnumerable<PostulationResponseDTO>> GetAllAsync();
+        Task<PostulationResponseDTO> GetByIdAsync(int id);
+        Task<PostulationResponseDTO> CreateAsync(PostulationDTO postulationDTO);
+        Task<bool> UpdateAsync(int id, PostulationDTO postulationDTO);
         Task<bool> DeleteAsync(int id);
     }
 }

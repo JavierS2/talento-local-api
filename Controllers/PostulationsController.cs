@@ -1,60 +1,143 @@
-using Microsoft.AspNetCore.Mvc;
-using TalentoLocal.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using TalentoLocal.DTOs;
 using TalentoLocal.Services.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace TalentoLocal.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class PostulationsController : ControllerBase
+    [Route("api/[controller]")]
+    public class PostulationController : ControllerBase
     {
-        private readonly IPostulationService _postulationService;
+        private readonly IPostulationService _service;
+        private readonly IBlobStorageService _blob;
 
-        public PostulationsController(IPostulationService postulationService)
+        public PostulationController(IPostulationService service, IBlobStorageService blob)
         {
-            _postulationService = postulationService;
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<int>> Create([FromBody] Postulation postulation)
-        {
-            if (postulation == null) return BadRequest("Body is null");
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var postulationId = await _postulationService.AddPostulationAsync(postulation);
-            return CreatedAtAction(nameof(GetById), new { id = postulationId }, new { id = postulationId });
+            _service = service;
+            _blob = blob;
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var postulation = await _postulationService.GetAllAsync();
-            return Ok(postulation);
+            var postulaciones = await _service.GetAllAsync();
+            return Ok(postulaciones);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Postulation>> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var result = await _postulationService.GetByIdAsync(id);
-            if (result == null) return NotFound();
-            return Ok(result);
+            try
+            {
+                var postulation = await _service.GetByIdAsync(id);
+                return Ok(postulation);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al obtener la postulación." });
+            }
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Postulation>> Updated(int id, Postulation postulation)
+        // 🟩 POST: Acepta archivos, se debe usar [FromForm]
+        [HttpPost]
+        public async Task<IActionResult> Create([FromForm] PostulationDTO dto)
         {
-            if (postulation == null) return BadRequest("Body is null");
+            try
+            {
+                if (dto == null)
+                    return BadRequest("El cuerpo de la solicitud no puede estar vacío.");
 
-            var updated = await _postulationService.UpdateAsync(id, postulation);
-            return updated ? NoContent() : NotFound();
+                var created = await _service.CreateAsync(dto);
+
+                return Created("api/Postulation", created);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
+            }
+        }
+
+        // 🟩 PUT: También debe aceptar archivos → [FromForm]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromForm] PostulationDTO dto)
+        {
+            try
+            {
+                var result = await _service.UpdateAsync(id, dto);
+                return result
+                    ? Ok(new { message = "Postulación actualizada correctamente." })
+                    : NotFound(new { message = "No se pudo actualizar la postulación." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al actualizar la postulación." });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _postulationService.DeleteAsync(id);
-            if (!deleted) return NotFound();
-            return NoContent();
+            try
+            {
+                var result = await _service.DeleteAsync(id);
+                return result
+                    ? Ok(new { message = "Postulación eliminada correctamente." })
+                    : NotFound(new { message = "No se pudo eliminar la postulación." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al eliminar la postulación." });
+            }
         }
+        [HttpGet("{id}/document")]
+        public async Task<IActionResult> GetDocumentUrl(int id)
+        {
+            // 1. Obtener la postulación
+            var entity = await _service.GetByIdAsync(id);
+
+            if (entity == null)
+                return NotFound(new { message = "No existe la postulación." });
+
+            // 2. entity.DocumentFile contiene el blobName (ej: "abc123.pdf")
+
+            if (string.IsNullOrWhiteSpace(entity.DocumentFileUrl))
+                return BadRequest(new { message = "La postulación no tiene un documento asociado." });
+
+            // 3. Generar SAS URL por 20 min
+            string sasUrl = _blob.GenerateSasUrl(entity.DocumentFileUrl);
+
+            return Ok(new { url = sasUrl });
+        }
+
     }
 }

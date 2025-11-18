@@ -1,15 +1,14 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TalentoLocal.Models;
+using TalentoLocal.DTOs;
 
 namespace TalentoLocal.Services.Interfaces
 {
     public interface IOfferService
     {
-        Task<int> AddOfferAsync(Offer offer);
-        Task<IEnumerable<Offer>> GetAllAsync();
-        Task<Offer?> GetByIdAsync(int id);
-        Task<bool> UpdateAsync(int id, Offer offer);
+        Task<List<OfferDTO>> GetAllAsync();
+        Task<OfferDTO> CreateAsync(OfferDTO offerDTO);
+        Task<OfferDTO?> GetByIdAsync(int id);
+        Task<bool> UpdateAsync(int id, OfferDTO offerDTO);
         Task<bool> DeleteAsync(int id);
     }
 }

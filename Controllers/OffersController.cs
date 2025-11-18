@@ -1,60 +1,129 @@
 using Microsoft.AspNetCore.Mvc;
-using TalentoLocal.Models;
+using TalentoLocal.DTOs;
 using TalentoLocal.Services.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace TalentoLocal.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class OffersController : ControllerBase
     {
-        private readonly IOfferService _offerService;
+        private readonly IOfferService _service;
 
-        public OffersController(IOfferService offerService)
+        public OffersController(IOfferService service)
         {
-            _offerService = offerService;
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<int>> Create([FromBody] Offer offer)
-        {
-            if (offer == null) return BadRequest("Body is null");
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var offerId = await _offerService.AddOfferAsync(offer);
-            return CreatedAtAction(nameof(GetById), new { id = offerId }, new { id = offerId });
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var offer = await _offerService.GetAllAsync();
-            return Ok(offer);
+            var offers = await _service.GetAllAsync();
+            return Ok(offers);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Offer>> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var result = await _offerService.GetByIdAsync(id);
-            if (result == null) return NotFound();
-            return Ok(result);
+            try
+            {
+                var offer = await _service.GetByIdAsync(id);
+                return Ok(offer);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al obtener la oferta." });
+            }
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Offer>> Updated(int id, Offer offer)
+        [HttpPost]
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] OfferDTO dto)
         {
-            if (offer == null) return BadRequest("Body is null");
+            try
+            {
+                if (dto == null)
+                    return BadRequest(new { message = "El cuerpo de la solicitud no puede estar vacío." });
 
-            var updated = await _offerService.UpdateAsync(id, offer);
-            return updated ? NoContent() : NotFound();
+                var created = await _service.CreateAsync(dto);
+
+                return Created("api/Offers", created);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
+            }
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] OfferDTO dto)
+        {
+            try
+            {
+                var result = await _service.UpdateAsync(id, dto);
+                return result
+                    ? Ok(new { message = "Oferta actualizada correctamente." })
+                    : NotFound(new { message = "No se pudo actualizar la oferta." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al actualizar la oferta." });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _offerService.DeleteAsync(id);
-            if (!deleted) return NotFound();
-            return NoContent();
+            try
+            {
+                var result = await _service.DeleteAsync(id);
+                return result
+                    ? Ok(new { message = "Oferta eliminada correctamente." })
+                    : NotFound(new { message = "No se pudo eliminar la oferta." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al eliminar la oferta." });
+            }
         }
     }
 }

@@ -1,34 +1,33 @@
-﻿using System.Collections.Generic;
-using TalentoLocal.Models.enums;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TalentoLocal.Models
 {
+    [Table("Evaluations")]
     public class Evaluation
     {
+        [Key]
+        [Column("id")]
         public int Id { get; set; }
 
-        // FK → Postulation
+        [Required]
+        [Column("postulation_id")]
         public int PostulationId { get; set; }
 
-        // Navigation property
-        public Postulation Postulation { get; set; } = null!;
+        [ForeignKey("PostulationId")]
+        public Postulation? Postulation { get; set; }
 
-        // FK → User (Evaluator)
-        public int EvaluatorId { get; set; } // type user (no implement)
+        [Required]
+        [Column("justification")]
+        public string Justification { get; set; } = string.Empty;
 
-        public string Criteria { get; set; } = string.Empty;
+        [Required]
+        [Column("create_at")]
+        public DateTime CreatedAt { get; set; }
 
-        public float Result { get; set; }
-
-        public string Comments { get; set; } = string.Empty;
-
-        public DateTime EvaluationDate { get; set; }
-
-        public EvaluationStatus Status { get; set; } = EvaluationStatus.Pending;
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-
+        [Required]
+        [Column("update_at")]
+        public DateTime UpdatedAt { get; set; }
     }
 }
