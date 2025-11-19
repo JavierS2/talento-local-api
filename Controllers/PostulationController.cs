@@ -139,5 +139,22 @@ namespace TalentoLocal.Controllers
             return Ok(new { url = sasUrl });
         }
 
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetPostulationsByUserId(int userId)
+        {
+            if (userId <= 0)
+                return BadRequest("El ID del usuario debe ser mayor a 0.");
+
+            var postulations = await _service.GetPostulationsByUserIdAsync(userId);
+
+            if (postulations == null || !postulations.Any())
+                return NotFound($"No existen postulaciones para el usuario con ID: {userId}");
+
+            return Ok(postulations);
+        }
+
+
+
+
     }
 }
