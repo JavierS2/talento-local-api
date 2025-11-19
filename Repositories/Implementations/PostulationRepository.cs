@@ -55,5 +55,17 @@ namespace TalentoLocal.Repositories.Implementations
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Postulation>> GetPostulationsByUserIdAsync(int userId)
+        {
+            return await _context.Postulations
+                .Include(p => p.Offer)                 // Trae la oferta
+                .ThenInclude(o => o.Category)          // Trae la categoría de la oferta
+                .Include(p => p.Status)                // Trae el estado de la postulación
+                .Where(p => p.UserId == userId)        // Filtra por usuario
+                .ToListAsync();
+        }
+
+
     }
 }

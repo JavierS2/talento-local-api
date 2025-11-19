@@ -147,4 +147,18 @@ public class PostulationService : IPostulationService
                 $"La oferta con ID {dto.OfferId} no existe."
             );
     }
+
+    public async Task<List<PostulationResponseDTO>> GetPostulationsByUserIdAsync(int userId)
+    {
+        var postulations = await _repository.GetPostulationsByUserIdAsync(userId);
+
+        if (postulations == null || postulations.Count == 0)
+            return new List<PostulationResponseDTO>();
+
+        return postulations
+            .Select(p => PostulationMapper.ToDto(p))
+            .ToList();
+    }
+
+
 }
