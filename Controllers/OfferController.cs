@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace TalentoLocal.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class OffersController : ControllerBase
+    [Route("api/offers")]
+    public class OfferController : ControllerBase
     {
         private readonly IOfferService _service;
 
-        public OffersController(IOfferService service)
+        public OfferController(IOfferService service)
         {
             _service = service;
         }

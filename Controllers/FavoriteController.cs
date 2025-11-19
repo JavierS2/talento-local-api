@@ -71,7 +71,8 @@ namespace TalentoLocal.Controllers
                     return BadRequest("El cuerpo de la solicitud no puede estar vacío.");
 
                 var created = await _service.CreateAsync(dto);
-                return Created("api/Favorites", created);
+                // coherente con [Route("api/favorites")]
+                return Created("api/favorites", created);
             }
             catch (ArgumentException ex)
             {

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace TalentoLocal.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/offer-category")]
     public class OfferCategoryController : ControllerBase
     {
         private readonly IOfferCategoryService _service;
