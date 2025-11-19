@@ -142,6 +142,16 @@ namespace TalentoLocal.Services.Implementations
         }
 
         // Validaciones de negocio
+
+        public async Task<List<OfferResponseDTO>> GetOffersByUserIdAsync(int userId)
+        {
+            var offers = await _repository.GetOffersByUserIdAsync(userId);
+
+            return offers.Select(o => OfferMapper.ToDTO(o)).ToList();
+        }
+
+
+
         private void ValidateOffer(Offer offer)
         {
             if (string.IsNullOrWhiteSpace(offer.Title))
