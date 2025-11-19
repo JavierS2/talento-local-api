@@ -13,6 +13,7 @@ public partial class DbDevopsContext : DbContext
     public virtual DbSet<OfferCategory> OfferCategories { get; set; }
     public virtual DbSet<Postulation> Postulations { get; set; }
     public virtual DbSet<PostulationStatus> PostulationStatus { get; set; }
+    public virtual DbSet<Favorite> Favorites { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,7 +45,6 @@ public partial class DbDevopsContext : DbContext
                 new OfferCategory { Id = 11, Name = "Logística y Operaciones", CreatedAt = seedDate },
                 new OfferCategory { Id = 12, Name = "Arte y Cultura", CreatedAt = seedDate }
             );
-
 
             // Relación 1:N con Offer
             entity.HasMany(c => c.Offers)
@@ -135,8 +135,7 @@ public partial class DbDevopsContext : DbContext
             entity.Property(p => p.DocumentFile)
                   .IsRequired();
 
-            // Offer (N:1) ya queda por la config de Offer.HasMany,
-            // pero lo dejamos explícito por claridad
+            // Offer (N:1)
             entity.HasOne(p => p.Offer)
                   .WithMany(o => o.Postulations)
                   .HasForeignKey(p => p.OfferId)
@@ -144,7 +143,7 @@ public partial class DbDevopsContext : DbContext
 
             // Status (N:1)
             entity.HasOne(p => p.Status)
-                  .WithMany() // sin navegación de colección en Status por ahora
+                  .WithMany()
                   .HasForeignKey(p => p.StatusId)
                   .OnDelete(DeleteBehavior.Restrict);
 
@@ -164,6 +163,33 @@ public partial class DbDevopsContext : DbContext
             entity.Property(e => e.Justification)
                   .IsRequired();
         });
+
+        // =======================
+        // Favorite
+        // =======================
+        modelBuilder.Entity<Favorite>(entity =>
+        {
+            entity.HasKey(f => f.Id);
+
+            entity.Property(f => f.UserId)
+                  .IsRequired();
+
+            entity.Property(f => f.OfferId)
+                  .IsRequired();
+
+            entity.Property(f => f.CreatedAt)
+                  .IsRequired();
+
+            // Relación N:1 con Offer
+            entity.HasOne(f => f.Offer)
+                  .WithMany()
+                  .HasForeignKey(f => f.OfferId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(f => new { f.UserId, f.OfferId })
+                  .IsUnique();
+        });
     }
+
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

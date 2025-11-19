@@ -1,16 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 using TalentoLocal.DTOs;
+using TalentoLocal.Services.Implementations;
 using TalentoLocal.Services.Interfaces;
 
 namespace TalentoLocal.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class EvaluationsController : ControllerBase
+    [Route("api/offers")]
+    public class OfferController : ControllerBase
     {
-        private readonly IEvaluationService _service;
+        private readonly IOfferService _service;
 
-        public EvaluationsController(IEvaluationService service)
+        public OfferController(IOfferService service)
         {
             _service = service;
         }
@@ -18,8 +21,8 @@ namespace TalentoLocal.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var evaluations = await _service.GetAllAsync();
-            return Ok(evaluations);
+            var offers = await _service.GetAllAsync();
+            return Ok(offers);
         }
 
         [HttpGet("{id}")]
@@ -27,8 +30,8 @@ namespace TalentoLocal.Controllers
         {
             try
             {
-                var evaluation = await _service.GetByIdAsync(id);
-                return Ok(evaluation);
+                var offer = await _service.GetByIdAsync(id);
+                return Ok(offer);
             }
             catch (ArgumentException ex)
             {
@@ -40,24 +43,34 @@ namespace TalentoLocal.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, new { message = "Ocurrió un error al obtener la evaluación." });
+                return StatusCode(500, new { message = "Ocurrió un error al obtener la oferta." });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] EvaluationDTO dto)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] OfferDTO dto)
         {
             try
             {
                 if (dto == null)
-                    return BadRequest("El cuerpo de la solicitud no puede estar vacío.");
+                    return BadRequest(new { message = "El cuerpo de la solicitud no puede estar vacío." });
 
                 var created = await _service.CreateAsync(dto);
-                return Created("api/Evaluations", created);
+
+                return Created("api/Offers", created);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -65,15 +78,16 @@ namespace TalentoLocal.Controllers
             }
         }
 
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] EvaluationDTO dto)
+        public async Task<IActionResult> Update(int id, [FromBody] OfferDTO dto)
         {
             try
             {
                 var result = await _service.UpdateAsync(id, dto);
                 return result
-                    ? Ok(new { message = "Evaluación actualizada correctamente." })
-                    : NotFound(new { message = "No se pudo actualizar la evaluación." });
+                    ? Ok(new { message = "Oferta actualizada correctamente." })
+                    : NotFound(new { message = "No se pudo actualizar la oferta." });
             }
             catch (ArgumentException ex)
             {
@@ -85,7 +99,7 @@ namespace TalentoLocal.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, new { message = "Ocurrió un error al actualizar la evaluación." });
+                return StatusCode(500, new { message = "Ocurrió un error al actualizar la oferta." });
             }
         }
 
@@ -96,8 +110,8 @@ namespace TalentoLocal.Controllers
             {
                 var result = await _service.DeleteAsync(id);
                 return result
-                    ? Ok(new { message = "Evaluación eliminada correctamente." })
-                    : NotFound(new { message = "No se pudo eliminar la evaluación." });
+                    ? Ok(new { message = "Oferta eliminada correctamente." })
+                    : NotFound(new { message = "No se pudo eliminar la oferta." });
             }
             catch (ArgumentException ex)
             {
@@ -109,8 +123,22 @@ namespace TalentoLocal.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, new { message = "Ocurrió un error al eliminar la evaluación." });
+                return StatusCode(500, new { message = "Ocurrió un error al eliminar la oferta." });
             }
         }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetOffersByUserId(int userId)
+        {
+            var offers = await _service.GetOffersByUserIdAsync(userId);
+
+            if (offers == null || !offers.Any())
+                return NotFound($"No hay ofertas disponibles para el usuario con ID {userId}");
+
+            return Ok(offers);
+        }
+
+
+
     }
 }
