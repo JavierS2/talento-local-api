@@ -41,6 +41,7 @@ builder.Services.AddScoped<IOfferCategoryService, OfferCategoryService>(); // (X
 builder.Services.AddScoped<IPostulationService, PostulationService>();
 builder.Services.AddScoped<IPostulationStatusService, PostulationStatusService>(); // (X)
 builder.Services.AddScoped<IBlobStorageService, AzureBlobStorageService>();
+builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 
 
 // ----------------------
@@ -51,7 +52,8 @@ builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>();
 builder.Services.AddScoped<IOfferRepository, OfferRepository>(); 
 builder.Services.AddScoped<IOfferCategoryRepository, OfferCategoryRepository>();
 builder.Services.AddScoped<IPostulationRepository, PostulationRepository>();  
-builder.Services.AddScoped<IPostulationStatusRepository, PostulationStatusRepository>(); 
+builder.Services.AddScoped<IPostulationStatusRepository, PostulationStatusRepository>();
+builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 
 var app = builder.Build();
 
