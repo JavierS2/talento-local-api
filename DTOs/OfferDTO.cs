@@ -65,4 +65,30 @@ namespace TalentoLocal.DTOs
         [Required]
         int CategoryId
     );
+
+    public record OfferResponseDTO(
+        int Id,
+        string Title,
+        string? SubTitle,
+        string Description,
+        string Modality,
+        int Salary,
+        string Requeriments,
+        string Benefits,
+        int YearsExperience,
+        string Location,
+        string Journey,
+        string? Schedule,
+        int AvailablePlaces,
+        string Status,
+        string ContractType,
+        string PaymentType,
+        DateTime PublicationDate,
+        DateTime? ClosingDate,
+        int CompanyId,
+        int CategoryId,
+        bool? Featured,
+        bool? Urgent,
+        float? Rating
+    );
 }

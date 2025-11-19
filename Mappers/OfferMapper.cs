@@ -5,12 +5,13 @@ namespace TalentoLocal.Mappers
 {
     public static class OfferMapper
     {
-        public static OfferDTO ToDTO(Offer entity)
+        public static OfferResponseDTO ToDTO(Offer entity)
         {
             if (entity == null)
                 return null!;
 
-            return new OfferDTO(
+            return new OfferResponseDTO(
+                entity.Id,
                 entity.Title,
                 entity.SubTitle,
                 entity.Description,
@@ -29,9 +30,13 @@ namespace TalentoLocal.Mappers
                 entity.PublicationDate,
                 entity.ClosingDate,
                 entity.CompanyId,
-                entity.CategoryId
+                entity.CategoryId,
+                entity.Featured,
+                entity.Urgent,
+                entity.Rating
             );
         }
+
 
         public static Offer ToEntity(OfferDTO dto)
         {
@@ -64,9 +69,9 @@ namespace TalentoLocal.Mappers
             };
         }
 
-        public static List<OfferDTO> ToDTOList(IEnumerable<Offer> entities)
+        public static List<OfferResponseDTO> ToDTOList(IEnumerable<Offer> entities)
         {
-            var list = new List<OfferDTO>();
+            var list = new List<OfferResponseDTO>();
             foreach (var entity in entities)
             {
                 list.Add(ToDTO(entity));
