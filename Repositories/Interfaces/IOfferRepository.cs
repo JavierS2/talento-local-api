@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using TalentoLocal.DTOs;
 using TalentoLocal.Models;
 
 namespace TalentoLocal.Repositories.Interfaces
@@ -12,5 +13,8 @@ namespace TalentoLocal.Repositories.Interfaces
         Task UpdateAsync(Offer offer);
         Task DeleteAsync(int id);
         Task SaveChangesAsync();
+
+        Task<List<Offer>> GetOffersByUserIdAsync(int userId);
+
     }
 }
