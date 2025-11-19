@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using TalentoLocal.DTOs;
-using TalentoLocal.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
+using TalentoLocal.DTOs;
+using TalentoLocal.Services.Implementations;
+using TalentoLocal.Services.Interfaces;
 
 namespace TalentoLocal.Controllers
 {
@@ -125,5 +126,19 @@ namespace TalentoLocal.Controllers
                 return StatusCode(500, new { message = "Ocurrió un error al eliminar la oferta." });
             }
         }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetOffersByUserId(int userId)
+        {
+            var offers = await _service.GetOffersByUserIdAsync(userId);
+
+            if (offers == null || !offers.Any())
+                return NotFound($"No hay ofertas disponibles para el usuario con ID {userId}");
+
+            return Ok(offers);
+        }
+
+
+
     }
 }
