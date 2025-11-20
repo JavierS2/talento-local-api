@@ -1,0 +1,63 @@
+trigger:
+  branches:
+    include:
+      - master          # CI/CD en cada push a master
+
+pr:
+  branches:
+    include:
+      - master          # CI (sin deploy) en PR hacia main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  publishDir: '$(Build.ArtifactStagingDirectory)/publish'
+  webAppName: 'talentolocal'                 # <-- CÁMBIALO
+  azureSubscription: 'Azure for Students(575d77f4-8539-48ac-8107-28a115f8ab06)'  # <-- CÁMBIALO
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Instalar .NET SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '9.x'          # Cambia a 6.x / 7.x si aplica
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.sln'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    command: 'build'
+    projects: '**/*.sln'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: 'test'
+    projects: '**/*Tests/*.csproj'      # Ajusta si tus tests están en otra ruta
+    arguments: '--configuration $(buildConfiguration) --no-build'
+    publishTestResults: true
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '--configuration $(buildConfiguration) --output $(publishDir)'
+    zipAfterPublish: false
+
+# ====== CD: Deploy (solo cuando la rama es master) ======
+- task: AzureWebApp@1
+  displayName: 'Deploy a Azure Web App'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  inputs:
+    azureSubscription: '$(azureSubscription)'
+    appName: '$(webAppName)'
+    package: '$(publishDir)'
