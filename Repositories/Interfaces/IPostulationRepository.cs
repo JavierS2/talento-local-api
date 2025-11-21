@@ -12,6 +12,10 @@ namespace TalentoLocal.Repositories.Interfaces
         Task UpdateAsync(Postulation postulation);
         Task DeleteAsync(int id);
         Task SaveChangesAsync();
+
+        Task<List<Postulation>> GetPostulationsByUserIdAsync(int userId);
+
+
     }
 }
 

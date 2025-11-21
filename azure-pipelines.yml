@@ -1,30 +1,56 @@
 trigger:
-  - dev
+  branches:
+    include:
+      - master      # CI/CD en cada push a master
+
+pr:
+  branches:
+    include:
+      - master      # CI (sin deploy) en PR hacia master
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  publishDir: '$(Build.ArtifactStagingDirectory)/publish'
+  webAppName: 'talentolocal'
+  azureSubscription: 'NOMBRE-DE-TU-SERVICE-CONNECTION'   # <-- CAMBIAR
 
 steps:
-  - task: DotNetCoreCLI@2
-    displayName: Compilation
-    inputs:
-      command: 'build'
-      projects: '**/*.csproj'
-      workingDirectory: '$(System.DefaultWorkingDirectory)'
+- task: UseDotNet@2
+  displayName: 'Instalar .NET SDK 9'
+  inputs:
+    packageType: 'sdk'
+    version: '9.x'
 
-  - task: DotNetCoreCLI@2
-    displayName: Publication
-    inputs:
-      command: 'publish'
-      publishWebProjects: true
-      workingDirectory: '$(System.DefaultWorkingDirectory)'
-        
-  - task: AzureRmWebAppDeployment@5
-    displayName: Deploy
-    inputs:
-      ConnectedServiceName: 'Azure for Students(575d77f4-8539-48ac-8107-28a115f8ab06)'
-      ConnectionType: 'AzureRM'
-      appType: 'webAppLinux'
-      WebAppName: 'talentolocal'
-      packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
-      DeploymentTypeLinux: 'oneDeploy'
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.sln'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    command: 'build'
+    projects: '**/*.sln'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '--configuration $(buildConfiguration) --output $(publishDir)'
+    zipAfterPublish: false
+
+# ===== CD: Deploy solo cuando la rama es master =====
+- task: AzureWebApp@1
+  displayName: 'Deploy a Azure Web App (talentolocal)'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  inputs:
+    appType: 'webApp'
+    azureSubscription: '$(azureSubscription)'
+    appName: '$(webAppName)'
+    package: '$(publishDir)'

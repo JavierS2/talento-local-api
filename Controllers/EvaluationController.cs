@@ -5,12 +5,12 @@ using TalentoLocal.Services.Interfaces;
 namespace TalentoLocal.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class EvaluationsController : ControllerBase
+    [Route("api/evaluations")]
+    public class EvaluationController : ControllerBase
     {
         private readonly IEvaluationService _service;
 
-        public EvaluationsController(IEvaluationService service)
+        public EvaluationController(IEvaluationService service)
         {
             _service = service;
         }

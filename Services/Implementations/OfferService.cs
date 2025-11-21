@@ -19,7 +19,7 @@ namespace TalentoLocal.Services.Implementations
         }
 
         // Obtener todas las ofertas (devuelve lista de DTOs)
-        public async Task<List<OfferDTO>> GetAllAsync()
+        public async Task<List<OfferResponseDTO>> GetAllAsync()
         {
             var offers = await _repository.GetAllAsync();
             Console.WriteLine($"Ofertas recuperadas: {offers.Count}");
@@ -30,7 +30,7 @@ namespace TalentoLocal.Services.Implementations
 
 
         // Obtener una oferta por ID
-        public async Task<OfferDTO?> GetByIdAsync(int id)
+        public async Task<OfferResponseDTO?> GetByIdAsync(int id)
         {
             if (id <= 0)
                 throw new ArgumentException("El ID de la oferta debe ser mayor a 0.");
@@ -44,7 +44,7 @@ namespace TalentoLocal.Services.Implementations
         }
 
         // Crear nueva oferta
-        public async Task<OfferDTO> CreateAsync(OfferDTO offerDTO)
+        public async Task<OfferResponseDTO> CreateAsync(OfferDTO offerDTO)
         {
             if (offerDTO == null)
                 throw new ArgumentNullException(nameof(offerDTO));
@@ -53,8 +53,10 @@ namespace TalentoLocal.Services.Implementations
 
             // 2. Validaciones internas
             ValidateOffer(offer);
-
+            
             await ValidateForeignKeysAsync(offerDTO);
+
+            ValidateOfferStatus(offerDTO.Status); // validamos primero que sea | activo | destacado | urgente
 
             offer.CreatedAt = DateTime.Now;
             offer.UpdatedAt = DateTime.Now;
@@ -107,6 +109,7 @@ namespace TalentoLocal.Services.Implementations
             existing.Journey = updatedOffer.Journey;
             existing.Schedule = updatedOffer.Schedule;
             existing.AvailablePlaces = updatedOffer.AvailablePlaces;
+            ValidateOfferStatus(offerDTO.Status); // validamos primero que sea | activo | destacado | urgente
             existing.Status = updatedOffer.Status;
             existing.ContractType = updatedOffer.ContractType;
             existing.PaymentType = updatedOffer.PaymentType;
@@ -139,6 +142,16 @@ namespace TalentoLocal.Services.Implementations
         }
 
         // Validaciones de negocio
+
+        public async Task<List<OfferResponseDTO>> GetOffersByUserIdAsync(int userId)
+        {
+            var offers = await _repository.GetOffersByUserIdAsync(userId);
+
+            return offers.Select(o => OfferMapper.ToDTO(o)).ToList();
+        }
+
+
+
         private void ValidateOffer(Offer offer)
         {
             if (string.IsNullOrWhiteSpace(offer.Title))
@@ -174,5 +187,20 @@ namespace TalentoLocal.Services.Implementations
             if (offer.PublicationDate == default)
                 throw new ArgumentException("Debe establecerse una fecha de publicación.");
         }
+        private static readonly HashSet<string> AllowedStatus = new()
+        {
+            "activo",
+            "destacado",
+            "urgente"
+        };
+
+        private void ValidateOfferStatus(string status)
+        {
+            if (!AllowedStatus.Contains(status.ToLower()))
+            {
+                throw new ArgumentException("El campo 'status' solo puede ser: activo, destacado o urgente.");
+            }
+        }
+
     }
 }

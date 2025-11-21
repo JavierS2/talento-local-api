@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace TalentoLocal.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/postulations-status")]
     public class PostulationStatusController : ControllerBase
     {
         private readonly IPostulationStatusService _service;
