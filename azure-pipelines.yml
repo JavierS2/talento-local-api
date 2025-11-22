@@ -1,56 +1,72 @@
 trigger:
   branches:
     include:
-      - master      # CI/CD en cada push a master
-
-pr:
-  branches:
-    include:
-      - master      # CI (sin deploy) en PR hacia master
+      - master
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
-  publishDir: '$(Build.ArtifactStagingDirectory)/publish'
-  webAppName: 'talentolocal'
-  azureSubscription: 'NOMBRE-DE-TU-SERVICE-CONNECTION'   # <-- CAMBIAR
+  publishDir: '$(System.DefaultWorkingDirectory)/publish'
 
-steps:
-- task: UseDotNet@2
-  displayName: 'Instalar .NET SDK 9'
-  inputs:
-    packageType: 'sdk'
-    version: '9.x'
+stages:
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet restore'
-  inputs:
-    command: 'restore'
-    projects: '**/*.sln'
+# ======================
+#   STAGE 1: BUILD (CI)
+# ======================
+- stage: Build
+  displayName: "Build .NET API"
+  jobs:
+  - job: Build
+    steps:
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet build'
-  inputs:
-    command: 'build'
-    projects: '**/*.sln'
-    arguments: '--configuration $(buildConfiguration)'
+    - task: UseDotNet@2
+      displayName: "Install .NET SDK"
+      inputs:
+        packageType: "sdk"
+        version: "8.x"
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish'
-  inputs:
-    command: 'publish'
-    publishWebProjects: true
-    arguments: '--configuration $(buildConfiguration) --output $(publishDir)'
-    zipAfterPublish: false
+    - script: dotnet restore
+      displayName: "Restore"
 
-# ===== CD: Deploy solo cuando la rama es master =====
-- task: AzureWebApp@1
-  displayName: 'Deploy a Azure Web App (talentolocal)'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  inputs:
-    appType: 'webApp'
-    azureSubscription: '$(azureSubscription)'
-    appName: '$(webAppName)'
-    package: '$(publishDir)'
+    - script: dotnet build --configuration Release --no-restore
+      displayName: "Build"
+
+    - script: dotnet publish -c Release -o $(publishDir)
+      displayName: "Publish"
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: "$(publishDir)"
+        ArtifactName: "drop"
+
+# ======================
+#   STAGE 2: DEPLOY (CD)
+# ======================
+- stage: Deploy
+  displayName: "Deploy to Azure App Service"
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - deployment: DeployWeb
+    environment: "talentolocal-env"
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: "current"
+              downloadType: "single"
+              artifactName: "drop"
+              downloadPath: "$(System.DefaultWorkingDirectory)"
+
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: "Azure for Students(575d77f4-8539-48ac-8107-28a115f8ab06)"
+              appType: "webAppLinux"
+              appName: "talentolocal-api-dev"
+              package: "$(System.DefaultWorkingDirectory)/drop/**/*.zip"
