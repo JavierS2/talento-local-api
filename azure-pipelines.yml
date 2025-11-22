@@ -64,14 +64,28 @@ stages:
     - checkout: self
       persistCredentials: true
       clean: true
+      fetchDepth: 0
 
     - script: |
         git config --global user.email "pipeline@azuredevops.com"
         git config --global user.name "Azure Pipeline"
+        echo "Fetching all branches..."
         git fetch origin
+        echo "Current branches:"
+        git branch -a
+        echo "Checking out master..."
         git checkout -B master origin/master
-        git merge origin/dev --no-ff -m "Auto-merge: dev → master [skip ci]"
+        echo "Content in master before merge:"
+        git log --oneline -5
+        echo "Content in dev:"
+        git log origin/dev --oneline -5
+        echo "Merging dev into master..."
+        git merge origin/dev --no-ff --allow-unrelated-histories -m "Auto-merge: dev → master [skip ci]"
+        echo "Content in master after merge:"
+        git log --oneline -5
+        echo "Pushing to master..."
         git push origin master
+        echo "Merge completed successfully!"
       displayName: 'Merge y Push a Master'
 
 - stage: Build_Master
