@@ -1,56 +1,38 @@
 trigger:
   branches:
     include:
-      - master      # CI/CD en cada push a master
-
-pr:
-  branches:
-    include:
-      - master      # CI (sin deploy) en PR hacia master
+      - master      # CI solo cuando haya push en master
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
-  publishDir: '$(Build.ArtifactStagingDirectory)/publish'
-  webAppName: 'talentolocal'
-  azureSubscription: 'NOMBRE-DE-TU-SERVICE-CONNECTION'   # <-- CAMBIAR
+  publishDir: '$(Build.ArtifactStagingDirectory)'
 
 steps:
+
+# --- Instalar .NET (ajusta si usas net8.0) ---
 - task: UseDotNet@2
-  displayName: 'Instalar .NET SDK 9'
+  displayName: 'Instalar .NET SDK'
   inputs:
     packageType: 'sdk'
-    version: '9.x'
+    version: '8.x'   # IMPORTANTE: cambiar según tu version net8.0 o net7.0
 
-- task: DotNetCoreCLI@2
+# --- Restore ---
+- script: dotnet restore
   displayName: 'dotnet restore'
-  inputs:
-    command: 'restore'
-    projects: '**/*.sln'
 
-- task: DotNetCoreCLI@2
+# --- Build ---
+- script: dotnet build --configuration Release --no-restore
   displayName: 'dotnet build'
-  inputs:
-    command: 'build'
-    projects: '**/*.sln'
-    arguments: '--configuration $(buildConfiguration)'
 
-- task: DotNetCoreCLI@2
+# --- Publish ---
+- script: dotnet publish -c Release -o $(publishDir)
   displayName: 'dotnet publish'
-  inputs:
-    command: 'publish'
-    publishWebProjects: true
-    arguments: '--configuration $(buildConfiguration) --output $(publishDir)'
-    zipAfterPublish: false
 
-# ===== CD: Deploy solo cuando la rama es master =====
-- task: AzureWebApp@1
-  displayName: 'Deploy a Azure Web App (talentolocal)'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+# --- Publicar artefactos para CD ---
+- task: PublishBuildArtifacts@1
   inputs:
-    appType: 'webApp'
-    azureSubscription: '$(azureSubscription)'
-    appName: '$(webAppName)'
-    package: '$(publishDir)'
+    PathtoPublish: '$(publishDir)'
+    ArtifactName: 'drop'
