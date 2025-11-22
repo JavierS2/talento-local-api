@@ -1,72 +1,119 @@
+# Pipeline de Integración Continua para .NET Framework
+# Compila en dev y promueve a master
+
 trigger:
   branches:
     include:
+      - dev
       - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  publishDir: '$(System.DefaultWorkingDirectory)/publish'
 
 stages:
-
-# ======================
-#   STAGE 1: BUILD (CI)
-# ======================
-- stage: Build
-  displayName: "Build .NET API"
+- stage: Build_and_Test
+  displayName: 'Compilar y Probar en Dev'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
   jobs:
-  - job: Build
+  - job: BuildJob
+    displayName: 'Compilación y Pruebas'
     steps:
+    - task: NuGetToolInstaller@1
+      displayName: 'Instalar NuGet'
 
-    - task: UseDotNet@2
-      displayName: "Install .NET SDK"
+    - task: NuGetCommand@2
+      displayName: 'Restaurar paquetes NuGet'
       inputs:
-        packageType: "sdk"
-        version: "8.x"
+        restoreSolution: '$(solution)'
 
-    - script: dotnet restore
-      displayName: "Restore"
+    - task: VSBuild@1
+      displayName: 'Compilar solución'
+      inputs:
+        solution: '$(solution)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
-    - script: dotnet build --configuration Release --no-restore
-      displayName: "Build"
-
-    - script: dotnet publish -c Release -o $(publishDir)
-      displayName: "Publish"
+    - task: VSTest@2
+      displayName: 'Ejecutar pruebas unitarias'
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+      continueOnError: false
 
     - task: PublishBuildArtifacts@1
+      displayName: 'Publicar artefactos'
       inputs:
-        PathtoPublish: "$(publishDir)"
-        ArtifactName: "drop"
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
 
-# ======================
-#   STAGE 2: DEPLOY (CD)
-# ======================
-- stage: Deploy
-  displayName: "Deploy to Azure App Service"
-  dependsOn: Build
+- stage: Merge_to_Master
+  displayName: 'Promover a Master'
+  dependsOn: Build_and_Test
   condition: succeeded()
-
   jobs:
-  - deployment: DeployWeb
-    environment: "talentolocal-env"
-    strategy:
-      runOnce:
-        deploy:
-          steps:
+  - job: MergeJob
+    displayName: 'Merge Dev → Master'
+    steps:
+    - checkout: self
+      persistCredentials: true
+      clean: true
+      fetchDepth: 0
 
-          - task: DownloadBuildArtifacts@0
-            inputs:
-              buildType: "current"
-              downloadType: "single"
-              artifactName: "drop"
-              downloadPath: "$(System.DefaultWorkingDirectory)"
+    - script: |
+        git config --global user.email "pipeline@azuredevops.com"
+        git config --global user.name "Azure Pipeline"
+        echo "Fetching all branches..."
+        git fetch origin
+        echo "Current branches:"
+        git branch -a
+        echo "Checking out master..."
+        git checkout -B master origin/master
+        echo "Content in master before merge:"
+        git log --oneline -5
+        echo "Content in dev:"
+        git log origin/dev --oneline -5
+        echo "Merging dev into master..."
+        git merge origin/dev --no-ff --allow-unrelated-histories -m "Auto-merge: dev → master [skip ci]"
+        echo "Content in master after merge:"
+        git log --oneline -5
+        echo "Pushing to master..."
+        git push origin master
+        echo "Merge completed successfully!"
+      displayName: 'Merge y Push a Master'
 
-          - task: AzureWebApp@1
-            inputs:
-              azureSubscription: "Azure for Students(575d77f4-8539-48ac-8107-28a115f8ab06)"
-              appType: "webAppLinux"
-              appName: "talentolocal-api-dev"
-              package: "$(System.DefaultWorkingDirectory)/drop/**/*.zip"
+- stage: Build_Master
+  displayName: 'Compilar Master'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  jobs:
+  - job: BuildMasterJob
+    displayName: 'Compilación en Master'
+    steps:
+    - task: NuGetToolInstaller@1
+      displayName: 'Instalar NuGet'
+
+    - task: NuGetCommand@2
+      displayName: 'Restaurar paquetes NuGet'
+      inputs:
+        restoreSolution: '$(solution)'
+
+    - task: VSBuild@1
+      displayName: 'Compilar solución'
+      inputs:
+        solution: '$(solution)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publicar artefactos de Master'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'release'
+        publishLocation: 'Container'
