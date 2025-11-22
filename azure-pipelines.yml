@@ -66,7 +66,7 @@ stages:
 
           - task: AzureWebApp@1
             inputs:
-              azureSubscription: "AQUÍ-PONES-TU-SERVICE-CONNECTION"
+              azureSubscription: "Azure for Students(575d77f4-8539-48ac-8107-28a115f8ab06)"
               appType: "webAppLinux"
               appName: "talentolocal-api-dev"
               package: "$(System.DefaultWorkingDirectory)/drop/**/*.zip"
