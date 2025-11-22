@@ -1,38 +1,72 @@
 trigger:
   branches:
     include:
-      - master      # CI solo cuando haya push en master
+      - master
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
-  publishDir: '$(Build.ArtifactStagingDirectory)'
+  publishDir: '$(System.DefaultWorkingDirectory)/publish'
 
-steps:
+stages:
 
-# --- Instalar .NET (ajusta si usas net8.0) ---
-- task: UseDotNet@2
-  displayName: 'Instalar .NET SDK'
-  inputs:
-    packageType: 'sdk'
-    version: '8.x'   # IMPORTANTE: cambiar según tu version net8.0 o net7.0
+# ======================
+#   STAGE 1: BUILD (CI)
+# ======================
+- stage: Build
+  displayName: "Build .NET API"
+  jobs:
+  - job: Build
+    steps:
 
-# --- Restore ---
-- script: dotnet restore
-  displayName: 'dotnet restore'
+    - task: UseDotNet@2
+      displayName: "Install .NET SDK"
+      inputs:
+        packageType: "sdk"
+        version: "8.x"
 
-# --- Build ---
-- script: dotnet build --configuration Release --no-restore
-  displayName: 'dotnet build'
+    - script: dotnet restore
+      displayName: "Restore"
 
-# --- Publish ---
-- script: dotnet publish -c Release -o $(publishDir)
-  displayName: 'dotnet publish'
+    - script: dotnet build --configuration Release --no-restore
+      displayName: "Build"
 
-# --- Publicar artefactos para CD ---
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(publishDir)'
-    ArtifactName: 'drop'
+    - script: dotnet publish -c Release -o $(publishDir)
+      displayName: "Publish"
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: "$(publishDir)"
+        ArtifactName: "drop"
+
+# ======================
+#   STAGE 2: DEPLOY (CD)
+# ======================
+- stage: Deploy
+  displayName: "Deploy to Azure App Service"
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - deployment: DeployWeb
+    environment: "Production"
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: "current"
+              downloadType: "single"
+              artifactName: "drop"
+              downloadPath: "$(System.DefaultWorkingDirectory)"
+
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: "NombreDeTuServiceConnection"
+              appType: "webAppLinux"
+              appName: "talentolocal-api-dev"
+              package: "$(System.DefaultWorkingDirectory)/drop"
