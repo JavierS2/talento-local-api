@@ -51,7 +51,7 @@ stages:
 
   jobs:
   - deployment: DeployWeb
-    environment: "Production"
+    environment: "talentolocal-env"
     strategy:
       runOnce:
         deploy:
@@ -66,7 +66,7 @@ stages:
 
           - task: AzureWebApp@1
             inputs:
-              azureSubscription: "NombreDeTuServiceConnection"
+              azureSubscription: "AQUÍ-PONES-TU-SERVICE-CONNECTION"
               appType: "webAppLinux"
               appName: "talentolocal-api-dev"
-              package: "$(System.DefaultWorkingDirectory)/drop"
+              package: "$(System.DefaultWorkingDirectory)/drop/**/*.zip"
