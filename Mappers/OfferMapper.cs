@@ -33,7 +33,8 @@ namespace TalentoLocal.Mappers
                 entity.CategoryId,
                 entity.Featured,
                 entity.Urgent,
-                entity.Rating
+                entity.Rating,
+                entity.Category?.Name ?? "Sin categoría"
             );
         }
 
