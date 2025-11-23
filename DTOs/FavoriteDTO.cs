@@ -4,7 +4,7 @@ namespace TalentoLocal.DTOs
 {
     public record FavoriteDTO(
         [Required]
-        int UserId,
+        string UserId,
 
         [Required]
         int OfferId
