@@ -133,7 +133,7 @@ public partial class DbDevopsContext : DbContext
                   .IsRequired();
 
             entity.Property(p => p.DocumentFile)
-                  .IsRequired();
+                  .IsRequired(false);
 
             // Offer (N:1)
             entity.HasOne(p => p.Offer)
