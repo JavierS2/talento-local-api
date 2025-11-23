@@ -190,12 +190,12 @@ namespace TalentoLocal.Services.Implementations
                 throw new ArgumentException("El tipo de contrato es obligatorio.");
             if (string.IsNullOrWhiteSpace(offer.PaymentType))
                 throw new ArgumentException("El tipo de pago es obligatorio.");
-            if (offer.CompanyId <= 0)
-                throw new ArgumentException("Debe especificarse una empresa v�lida.");
+            if (string.IsNullOrWhiteSpace(offer.CompanyId))
+                    throw new ArgumentException("La ID de la empresa es obligatoria.");
             if (offer.CategoryId <= 0)
-                throw new ArgumentException("Debe especificarse una categor�a v�lida.");
+                throw new ArgumentException("Debe especificarse una categor�a válida.");
             if (offer.PublicationDate == default)
-                throw new ArgumentException("Debe establecerse una fecha de publicaci�n.");
+                throw new ArgumentException("Debe establecerse una fecha de publicación.");
         }
         private static readonly HashSet<string> AllowedStatus = new()
         {

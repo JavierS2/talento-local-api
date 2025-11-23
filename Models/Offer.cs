@@ -80,7 +80,7 @@ namespace TalentoLocal.Models
 
         [Required]
         [Column("company_id")] // Cuardar con el grupo de gestión de usuarios
-        public int CompanyId { get; set; }
+        public string CompanyId { get; set; } = string.Empty;
 
         [Required]
         [Column("category_id")]
