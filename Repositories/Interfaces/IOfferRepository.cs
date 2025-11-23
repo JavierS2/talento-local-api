@@ -13,9 +13,8 @@ namespace TalentoLocal.Repositories.Interfaces
         Task UpdateAsync(Offer offer);
         Task DeleteAsync(int id);
         Task SaveChangesAsync();
-
         Task<List<Offer>> GetOffersByUserIdAsync(string userId);
         Task<List<Offer>> GetByCategoryAsync(string category);
-
+        Task<List<Offer>> GetByCompanyIdAsync(string companyId);
     }
 }

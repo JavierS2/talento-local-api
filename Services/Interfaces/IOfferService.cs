@@ -12,6 +12,7 @@ namespace TalentoLocal.Services.Interfaces
         Task<bool> DeleteAsync(int id);
         Task<List<OfferResponseDTO>> GetOffersByUserIdAsync(string userId);
         Task<List<OfferResponseDTO>> GetByCategoryAsync(string category);
+        Task<List<OfferResponseDTO>> GetByCompanyIdAsync(string companyId);
 
     }
 }

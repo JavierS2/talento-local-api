@@ -152,7 +152,16 @@ namespace TalentoLocal.Controllers
             return Ok(results);
         }
 
+        [HttpGet("company/{companyId}")]
+        public async Task<IActionResult> GetOffersByCompanyId(string companyId)
+        {
+            var offers = await _service.GetByCompanyIdAsync(companyId);
 
+            if (offers == null || !offers.Any())
+                return NotFound($"No hay ofertas disponibles para la empresa con ID {companyId}");
+
+            return Ok(offers);
+        }
 
     }
 }
