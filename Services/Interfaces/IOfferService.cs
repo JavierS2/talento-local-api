@@ -10,7 +10,7 @@ namespace TalentoLocal.Services.Interfaces
         Task<OfferResponseDTO?> GetByIdAsync(int id);
         Task<bool> UpdateAsync(int id, OfferDTO offerDTO);
         Task<bool> DeleteAsync(int id);
-        Task<List<OfferResponseDTO>> GetOffersByUserIdAsync(int userId);
+        Task<List<OfferResponseDTO>> GetOffersByUserIdAsync(string userId);
 
     }
 }
