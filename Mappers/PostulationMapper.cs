@@ -22,7 +22,7 @@ namespace TalentoLocal.Mappers
 
 
         // 🔹 Convierte de DTO → entidad
-        public static Postulation ToEntity(PostulationDTO dto, string documentUrl)
+        public static Postulation ToEntity(PostulationDTO dto, string? documentUrl)
         {
             return new Postulation
             {
