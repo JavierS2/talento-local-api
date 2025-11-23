@@ -60,7 +60,7 @@ namespace TalentoLocal.DTOs
         DateTime? ClosingDate,
 
         [Required]
-        int CompanyId,
+        string CompanyId,
 
         [Required]
         int CategoryId
@@ -85,7 +85,7 @@ namespace TalentoLocal.DTOs
         string PaymentType,
         DateTime PublicationDate,
         DateTime? ClosingDate,
-        int CompanyId,
+        string CompanyId,
         int CategoryId,
         bool? Featured,
         bool? Urgent,
