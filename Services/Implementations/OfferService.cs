@@ -142,13 +142,20 @@ namespace TalentoLocal.Services.Implementations
             return true;
         }
 
-        // Validaciones de negocio
-
         public async Task<List<OfferResponseDTO>> GetOffersByUserIdAsync(string userId)
         {
             var offers = await _repository.GetOffersByUserIdAsync(userId);
 
             return offers.Select(o => OfferMapper.ToDTO(o)).ToList();
+        }
+
+        public async Task<List<OfferResponseDTO>> GetByCompanyIdAsync(string companyId)
+        {
+            var offers = await _repository.GetByCompanyIdAsync(companyId);
+
+            return offers
+                .Select(o => OfferMapper.ToDTO(o))
+                .ToList();
         }
 
         public async Task<List<OfferResponseDTO>> GetByCategoryAsync(string category)
@@ -159,8 +166,6 @@ namespace TalentoLocal.Services.Implementations
             var offers = await _repository.GetByCategoryAsync(category);
             return offers.Select(OfferMapper.ToDTO).ToList();
         }
-
-
 
         private void ValidateOffer(Offer offer)
         {
