@@ -58,7 +58,7 @@ namespace TalentoLocal.Repositories.Implementations
             return await _context.Offers
                 .Include(o => o.Category)
                 .Include(o => o.Postulations)
-                .Where(o => !o.Postulations!.Any(p => p.UserId == userId))
+                .Where(o => !o.Postulations!.Any(p => p.UserId == userId.ToString()))
                 .ToListAsync();
         }
 

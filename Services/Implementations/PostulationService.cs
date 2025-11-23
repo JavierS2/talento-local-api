@@ -148,7 +148,7 @@ public class PostulationService : IPostulationService
             );
     }
 
-    public async Task<List<PostulationResponseDTO>> GetPostulationsByUserIdAsync(int userId)
+    public async Task<List<PostulationResponseDTO>> GetPostulationsByUserIdAsync(string userId)
     {
         var postulations = await _repository.GetPostulationsByUserIdAsync(userId);
 

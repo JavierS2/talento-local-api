@@ -45,7 +45,7 @@ namespace TalentoLocal.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetByUser(int userId)
+        public async Task<IActionResult> GetByUser(string userId)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace TalentoLocal.Controllers
             }
         }
 
-        public record FavoriteToggleRequest(int UserId, int OfferId);
+        public record FavoriteToggleRequest(string UserId, int OfferId);
 
         [HttpPost("toggle")]
         public async Task<IActionResult> Toggle([FromBody] FavoriteToggleRequest request)

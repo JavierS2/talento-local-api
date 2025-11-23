@@ -9,8 +9,8 @@ namespace TalentoLocal.Services.Interfaces
         Task<FavoriteDTO?> GetByIdAsync(int id);
         Task<bool> UpdateAsync(int id, FavoriteDTO favoriteDTO);
         Task<bool> DeleteAsync(int id);
-        Task<List<FavoriteDTO>> GetByUserAsync(int userId);
-        Task<bool> ToggleAsync(int userId, int offerId);
+        Task<List<FavoriteDTO>> GetByUserAsync(string userId);
+        Task<bool> ToggleAsync(string userId, int offerId);
         // Toggle = si existe lo borra, si no existe lo agrega
     }
 }
