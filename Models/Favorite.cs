@@ -13,7 +13,7 @@ namespace TalentoLocal.Models
 
         [Required]
         [Column("user_id")]
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         [Required]
         [Column("offer_id")]
