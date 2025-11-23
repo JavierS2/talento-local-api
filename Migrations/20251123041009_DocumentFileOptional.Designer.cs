@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TalentoLocal.Models;
 
@@ -11,9 +12,11 @@ using TalentoLocal.Models;
 namespace TalentoLocal.Migrations
 {
     [DbContext(typeof(DbDevopsContext))]
-    partial class DbDevopsContextModelSnapshot : ModelSnapshot
+    [Migration("20251123041009_DocumentFileOptional")]
+    partial class DocumentFileOptional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -332,6 +335,7 @@ namespace TalentoLocal.Migrations
                         .HasColumnName("create_at");
 
                     b.Property<string>("DocumentFile")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("document_file");
 

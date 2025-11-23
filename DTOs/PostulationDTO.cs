@@ -11,8 +11,7 @@ namespace TalentoLocal.DTOs
         [Required(ErrorMessage = "La oferta es obligatoria.")]
         public int OfferId { get; set; }
 
-        [Required(ErrorMessage = "El documento es obligatorio.")]
-        public IFormFile DocumentFile { get; set; } = default!;
+        public IFormFile? DocumentFile { get; set; }
 
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
@@ -22,7 +21,7 @@ namespace TalentoLocal.DTOs
     {
         public string UserId { get; set; } = string.Empty;
         public int OfferId { get; set; }
-        public string DocumentFileUrl { get; set; } = string.Empty;
+        public string? DocumentFileUrl { get; set; }
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
     }
