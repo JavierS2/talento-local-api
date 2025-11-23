@@ -43,7 +43,7 @@ namespace TalentoLocal.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, new { message = "Ocurrió un error al obtener la oferta." });
+                return StatusCode(500, new { message = "Ocurriï¿½ un error al obtener la oferta." });
             }
         }
 
@@ -54,7 +54,7 @@ namespace TalentoLocal.Controllers
             try
             {
                 if (dto == null)
-                    return BadRequest(new { message = "El cuerpo de la solicitud no puede estar vacío." });
+                    return BadRequest(new { message = "El cuerpo de la solicitud no puede estar vacï¿½o." });
 
                 var created = await _service.CreateAsync(dto);
 
@@ -99,7 +99,7 @@ namespace TalentoLocal.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, new { message = "Ocurrió un error al actualizar la oferta." });
+                return StatusCode(500, new { message = "Ocurriï¿½ un error al actualizar la oferta." });
             }
         }
 
@@ -123,7 +123,7 @@ namespace TalentoLocal.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, new { message = "Ocurrió un error al eliminar la oferta." });
+                return StatusCode(500, new { message = "Ocurriï¿½ un error al eliminar la oferta." });
             }
         }
 
@@ -136,6 +136,20 @@ namespace TalentoLocal.Controllers
                 return NotFound($"No hay ofertas disponibles para el usuario con ID {userId}");
 
             return Ok(offers);
+        }
+
+        [HttpGet("search-by-category")]
+        public async Task<IActionResult> SearchByCategory([FromQuery] string category)
+        {
+            if (string.IsNullOrWhiteSpace(category))
+                return BadRequest(new { message = "El campo 'category' es obligatorio." });
+
+            var results = await _service.GetByCategoryAsync(category);
+
+            if (results == null || results.Count == 0)
+                return NotFound(new { message = $"No se encontraron ofertas para la categorÃ­a '{category}'." });
+
+            return Ok(results);
         }
 
 
