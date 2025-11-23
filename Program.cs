@@ -57,11 +57,9 @@ builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseHttpsRedirection();
 
