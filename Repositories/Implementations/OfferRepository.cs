@@ -62,5 +62,18 @@ namespace TalentoLocal.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<List<Offer>> GetByCategoryAsync(string category)
+        {
+            if (string.IsNullOrWhiteSpace(category))
+                return new List<Offer>();
+
+            var normalized = category.Trim().ToLowerInvariant();
+
+            return await _context.Offers
+                .Include(o => o.Category)
+                .Include(o => o.Postulations)
+                .Where(o => o.Category != null && o.Category.Name.ToLower() == normalized)
+                .ToListAsync();
+        }
+        }
     }
-}
