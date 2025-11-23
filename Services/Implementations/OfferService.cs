@@ -143,7 +143,7 @@ namespace TalentoLocal.Services.Implementations
 
         // Validaciones de negocio
 
-        public async Task<List<OfferResponseDTO>> GetOffersByUserIdAsync(int userId)
+        public async Task<List<OfferResponseDTO>> GetOffersByUserIdAsync(string userId)
         {
             var offers = await _repository.GetOffersByUserIdAsync(userId);
 

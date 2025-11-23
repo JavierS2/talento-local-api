@@ -53,12 +53,12 @@ namespace TalentoLocal.Repositories.Implementations
         {
             await _context.SaveChangesAsync();
         }
-        public async Task<List<Offer>> GetOffersByUserIdAsync(int userId)
+        public async Task<List<Offer>> GetOffersByUserIdAsync(string userId)
         {
             return await _context.Offers
                 .Include(o => o.Category)
                 .Include(o => o.Postulations)
-                .Where(o => !o.Postulations!.Any(p => p.UserId == userId.ToString()))
+                .Where(o => !o.Postulations!.Any(p => p.UserId == userId))
                 .ToListAsync();
         }
 
