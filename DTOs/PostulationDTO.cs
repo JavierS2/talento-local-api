@@ -6,7 +6,7 @@ namespace TalentoLocal.DTOs
     public record PostulationDTO
     {
         [Required(ErrorMessage = "El usuario es obligatorio.")]
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La oferta es obligatoria.")]
         public int OfferId { get; set; }
@@ -20,7 +20,7 @@ namespace TalentoLocal.DTOs
 
     public class PostulationResponseDTO
     {
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public int OfferId { get; set; }
         public string DocumentFileUrl { get; set; } = string.Empty;
         public int StatusId { get; set; }

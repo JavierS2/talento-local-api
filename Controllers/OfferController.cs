@@ -130,6 +130,9 @@ namespace TalentoLocal.Controllers
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetOffersByUserId(int userId)
         {
+            if (userId <= 0)
+                return BadRequest("El ID del usuario debe ser un número válido mayor a 0.");
+
             var offers = await _service.GetOffersByUserIdAsync(userId);
 
             if (offers == null || !offers.Any())

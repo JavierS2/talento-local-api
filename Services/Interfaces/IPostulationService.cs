@@ -9,7 +9,7 @@ namespace TalentoLocal.Services.Interfaces
         Task<PostulationResponseDTO> CreateAsync(PostulationDTO postulationDTO);
         Task<bool> UpdateAsync(int id, PostulationDTO postulationDTO);
         Task<bool> DeleteAsync(int id);
-        Task<List<PostulationResponseDTO>> GetPostulationsByUserIdAsync(int userId);
+        Task<List<PostulationResponseDTO>> GetPostulationsByUserIdAsync(string userId);
 
     }
 }

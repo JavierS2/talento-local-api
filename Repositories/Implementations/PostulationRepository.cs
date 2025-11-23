@@ -56,7 +56,7 @@ namespace TalentoLocal.Repositories.Implementations
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Postulation>> GetPostulationsByUserIdAsync(int userId)
+        public async Task<List<Postulation>> GetPostulationsByUserIdAsync(string userId)
         {
             return await _context.Postulations
                 .Include(p => p.Offer)                 // Trae la oferta
