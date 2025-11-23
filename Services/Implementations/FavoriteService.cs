@@ -48,9 +48,6 @@ namespace TalentoLocal.Services.Implementations
             if (string.IsNullOrWhiteSpace(favoriteDTO.UserId))
                 throw new ArgumentException("El campo 'UserId' es obligatorio y no puede estar vacío.");
 
-            if (!int.TryParse(favoriteDTO.UserId, out var parsedUserId) || parsedUserId <= 0)
-                throw new ArgumentException("El campo 'UserId' debe ser un número válido mayor a cero.");
-
 
             // 🔹 Validación para OfferId
             if (favoriteDTO.OfferId <= 0)
@@ -80,8 +77,6 @@ namespace TalentoLocal.Services.Implementations
             if (string.IsNullOrWhiteSpace(favoriteDTO.UserId))
                 throw new ArgumentException("El campo 'UserId' es obligatorio y no puede estar vacío.");
 
-            if (!int.TryParse(favoriteDTO.UserId, out var parsedUserId) || parsedUserId <= 0)
-                throw new ArgumentException("El campo 'UserId' debe ser un número válido mayor a cero.");
 
             if (favoriteDTO.OfferId <= 0)
                 throw new ArgumentException("El campo 'OfferId' es obligatorio y debe ser válido.");
@@ -119,8 +114,6 @@ namespace TalentoLocal.Services.Implementations
 
         public async Task<List<FavoriteDTO>> GetByUserAsync(string userId)
         {
-            if (!int.TryParse(userId, out int parsedUserId) || parsedUserId <= 0)
-                throw new ArgumentException("El ID debe ser mayor a 0.");
 
             var favorites = await _context.Favorites
                 .Where(f => f.UserId == userId)
@@ -134,8 +127,6 @@ namespace TalentoLocal.Services.Implementations
         // Toggle favorito (agregar/quitar)
         public async Task<bool> ToggleAsync(string userId, int offerId)
         {
-            if (!int.TryParse(userId, out int parsedUserId) || parsedUserId <= 0)
-                throw new ArgumentException("El ID debe ser mayor a 0.");
 
             if (offerId <= 0)
                 throw new ArgumentException("El ID de la oferta debe ser mayor a 0.");

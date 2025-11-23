@@ -46,31 +46,39 @@ public class PostulationService : IPostulationService
         if (dto == null)
             throw new ArgumentNullException(nameof(dto), "La postulación no puede ser nula.");
 
- 
         await ValidateForeignKeysAsync(dto);
 
-        // 1. Subir archivo a Azure Blob Storage y obtener el blobName
-        string blobName = await _blobStorageService.UploadAsync(dto.DocumentFile);
+        string? blobName = null;
 
-        // 2. Crear la entidad usando el blobName
+        // 1. Subir archivo solo si existe
+        if (dto.DocumentFile != null)
+        {
+            blobName = await _blobStorageService.UploadAsync(dto.DocumentFile);
+        }
+
+        // 2. Crear entidad con blobName (puede ser null)
         var entity = PostulationMapper.ToEntity(dto, blobName);
 
         entity.CreatedAt = DateTime.Now;
         entity.UpdatedAt = DateTime.Now;
 
-        // 3. Guardar en BD
         await _repository.AddAsync(entity);
         await _repository.SaveChangesAsync();
 
-        // 4. Generar SAS temporal para devolver al frontend
-        string sasUrl = _blobStorageService.GenerateSasUrl(entity.DocumentFile);
+        // 3. Generar SAS solo si existe un archivo
+        string? sasUrl = null;
+        if (!string.IsNullOrWhiteSpace(entity.DocumentFile))
+        {
+            sasUrl = _blobStorageService.GenerateSasUrl(entity.DocumentFile);
+        }
 
-        // 5. Mapear a DTO de salida
+        // 4. Mapear a DTO de respuesta
         var response = PostulationMapper.ToDto(entity);
         response.DocumentFileUrl = sasUrl;
 
         return response;
     }
+
 
 
 

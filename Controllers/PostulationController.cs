@@ -142,9 +142,6 @@ namespace TalentoLocal.Controllers
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetPostulationsByUserId(string userId)
         {
-            if (!int.TryParse(userId, out int parsedUserId) || parsedUserId <= 0)
-                return BadRequest("El ID del usuario debe ser un número válido mayor a 0.");
-
             var postulations = await _service.GetPostulationsByUserIdAsync(userId);
 
             if (postulations == null || !postulations.Any())
