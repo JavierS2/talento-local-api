@@ -89,6 +89,7 @@ namespace TalentoLocal.DTOs
         int CategoryId,
         bool? Featured,
         bool? Urgent,
-        float? Rating
+        float? Rating,
+        string CategoryName
     );
 }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using TalentoLocal.DTOs;
 using TalentoLocal.Mappers;
 using TalentoLocal.Models;
@@ -38,7 +39,7 @@ namespace TalentoLocal.Services.Implementations
             var offer = await _repository.GetByIdAsync(id);
 
             if (offer == null)
-                throw new KeyNotFoundException($"No se encontró ningún oferta con el ID {id}.");
+                throw new KeyNotFoundException($"No se encontrï¿½ ningï¿½n oferta con el ID {id}.");
 
             return offer != null ? OfferMapper.ToDTO(offer) : null;
         }
@@ -75,10 +76,10 @@ namespace TalentoLocal.Services.Implementations
                 throw new ArgumentException($"La empresa con ID {dto.CompanyId} no existe.");*/
 
 
-            // Validar categoría
+            // Validar categorï¿½a
             bool categoryExists = await _context.OfferCategories.AnyAsync(c => c.Id == dto.CategoryId);
             if (!categoryExists)
-                throw new ArgumentException($"La categoría con ID {dto.CategoryId} no existe.");
+                throw new ArgumentException($"La categorï¿½a con ID {dto.CategoryId} no existe.");
         }
 
 
@@ -91,7 +92,7 @@ namespace TalentoLocal.Services.Implementations
 
             var existing = await _repository.GetByIdAsync(id);
             if (existing == null)
-                throw new KeyNotFoundException($"No se encontró ningún oferta con el ID {id}.");
+                throw new KeyNotFoundException($"No se encontrï¿½ ningï¿½n oferta con el ID {id}.");
 
             var updatedOffer = OfferMapper.ToEntity(offerDTO);
             ValidateOffer(updatedOffer);
@@ -133,7 +134,7 @@ namespace TalentoLocal.Services.Implementations
 
             var existing = await _repository.GetByIdAsync(id);
             if (existing == null)
-                throw new KeyNotFoundException($"No se encontró ningún oferta con el ID {id}.");
+                throw new KeyNotFoundException($"No se encontrï¿½ ningï¿½n oferta con el ID {id}.");
 
             await _repository.DeleteAsync(id);
             await _repository.SaveChangesAsync();
@@ -150,14 +151,23 @@ namespace TalentoLocal.Services.Implementations
             return offers.Select(o => OfferMapper.ToDTO(o)).ToList();
         }
 
+        public async Task<List<OfferResponseDTO>> GetByCategoryAsync(string category)
+        {
+            if (string.IsNullOrWhiteSpace(category))
+                return new List<OfferResponseDTO>();
+
+            var offers = await _repository.GetByCategoryAsync(category);
+            return offers.Select(OfferMapper.ToDTO).ToList();
+        }
+
 
 
         private void ValidateOffer(Offer offer)
         {
             if (string.IsNullOrWhiteSpace(offer.Title))
-                throw new ArgumentException("El título es obligatorio.");
+                throw new ArgumentException("El tï¿½tulo es obligatorio.");
             if (string.IsNullOrWhiteSpace(offer.Description))
-                throw new ArgumentException("La descripción es obligatoria.");
+                throw new ArgumentException("La descripciï¿½n es obligatoria.");
             if (string.IsNullOrWhiteSpace(offer.Modality))
                 throw new ArgumentException("La modalidad es obligatoria.");
             if (offer.Salary <= 0)
@@ -167,9 +177,9 @@ namespace TalentoLocal.Services.Implementations
             if (string.IsNullOrWhiteSpace(offer.Benefits))
                 throw new ArgumentException("Los beneficios son obligatorios.");
             if (offer.YearsExperience < 0)
-                throw new ArgumentException("Los años de experiencia no pueden ser negativos.");
+                throw new ArgumentException("Los aï¿½os de experiencia no pueden ser negativos.");
             if (string.IsNullOrWhiteSpace(offer.Location))
-                throw new ArgumentException("La ubicación es obligatoria.");
+                throw new ArgumentException("La ubicaciï¿½n es obligatoria.");
             if (string.IsNullOrWhiteSpace(offer.Journey))
                 throw new ArgumentException("La jornada es obligatoria.");
             if (offer.AvailablePlaces <= 0)
@@ -181,11 +191,11 @@ namespace TalentoLocal.Services.Implementations
             if (string.IsNullOrWhiteSpace(offer.PaymentType))
                 throw new ArgumentException("El tipo de pago es obligatorio.");
             if (offer.CompanyId <= 0)
-                throw new ArgumentException("Debe especificarse una empresa válida.");
+                throw new ArgumentException("Debe especificarse una empresa vï¿½lida.");
             if (offer.CategoryId <= 0)
-                throw new ArgumentException("Debe especificarse una categoría válida.");
+                throw new ArgumentException("Debe especificarse una categorï¿½a vï¿½lida.");
             if (offer.PublicationDate == default)
-                throw new ArgumentException("Debe establecerse una fecha de publicación.");
+                throw new ArgumentException("Debe establecerse una fecha de publicaciï¿½n.");
         }
         private static readonly HashSet<string> AllowedStatus = new()
         {
