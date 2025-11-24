@@ -223,6 +223,24 @@ namespace TalentoLocal.Services.Implementations
             );
         }
 
+        public async Task<List<PostulationResponseDTO>> GetPostulationsByOffer(int offerId)
+        {
+            // Validar oferta existente (mismo patrón que ya usas)
+            var offer = await _repository.GetByIdAsync(offerId);
+
+            if (offer == null)
+                throw new KeyNotFoundException($"No existe una oferta con el ID {offerId}.");
+
+            // Obtener postulaciones de la oferta
+            var postulations = await _repository.GetPostulationsByOffer(offerId);
+
+            // Mapear a DTO si corresponde
+            return postulations
+                .Select(PostulationMapper.ToDto)
+                .ToList();
+        }
+
+
 
         private void ValidateOfferStatus(string status)
         {
