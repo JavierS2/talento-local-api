@@ -3,6 +3,7 @@ using System.Linq;
 using TalentoLocal.DTOs;
 using TalentoLocal.Mappers;
 using TalentoLocal.Models;
+using TalentoLocal.Repositories.Implementations;
 using TalentoLocal.Repositories.Interfaces;
 using TalentoLocal.Services.Interfaces;
 
@@ -208,6 +209,20 @@ namespace TalentoLocal.Services.Implementations
             "destacado",
             "urgente"
         };
+
+        public async Task<OfferPostulationStatsDTO> GetPostulationStats(int offerId)
+        {
+            int total = await _repository.CountByOffer(offerId);
+            int reviewing = await _repository.CountByOfferAndStatus(offerId, "En revision");
+            int accepted = await _repository.CountByOfferAndStatus(offerId, "Aceptado");
+
+            return new OfferPostulationStatsDTO(
+                TotalPostulations: total,
+                ReviewingCount: reviewing,
+                AcceptedCount: accepted
+            );
+        }
+
 
         private void ValidateOfferStatus(string status)
         {
