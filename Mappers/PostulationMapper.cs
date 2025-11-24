@@ -12,6 +12,7 @@ namespace TalentoLocal.Mappers
 
             return new PostulationResponseDTO
             {
+                PostulationId = postulation.Id,
                 UserId = postulation.UserId,
                 OfferId = postulation.OfferId,
                 DocumentFileUrl = postulation.DocumentFile,

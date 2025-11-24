@@ -190,5 +190,28 @@ namespace TalentoLocal.Controllers
             }
         }
 
+        [HttpGet("{offerId}/postulations")]
+        public async Task<IActionResult> GetPostulationsByOffer(int offerId)
+        {
+            try
+            {
+                var result = await _service.GetPostulationsByOffer(offerId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al obtener las postulaciones de la oferta." });
+            }
+        }
+
+
     }
 }

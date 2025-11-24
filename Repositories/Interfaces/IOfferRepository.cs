@@ -19,5 +19,7 @@ namespace TalentoLocal.Repositories.Interfaces
         Task<int> CountByOffer(int offerId);
         Task<int> CountByOfferAndStatus(int offerId, string statusName);
 
+        Task<List<Postulation>> GetPostulationsByOffer(int offerId);
+
     }
 }
