@@ -16,5 +16,8 @@ namespace TalentoLocal.Repositories.Interfaces
         Task<List<Offer>> GetOffersByUserIdAsync(string userId);
         Task<List<Offer>> GetByCategoryAsync(string category);
         Task<List<Offer>> GetByCompanyIdAsync(string companyId);
+        Task<int> CountByOffer(int offerId);
+        Task<int> CountByOfferAndStatus(int offerId, string statusName);
+
     }
 }
