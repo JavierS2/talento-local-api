@@ -19,6 +19,7 @@ namespace TalentoLocal.DTOs
 
     public class PostulationResponseDTO
     {
+        public int PostulationId { get; set; }
         public string UserId { get; set; } = string.Empty;
         public int OfferId { get; set; }
         public string? DocumentFileUrl { get; set; }
