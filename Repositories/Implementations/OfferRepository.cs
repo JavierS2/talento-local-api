@@ -104,5 +104,14 @@ namespace TalentoLocal.Repositories.Implementations
                 .CountAsync();
         }
 
+        public async Task<List<Postulation>> GetPostulationsByOffer(int offerId)
+        {
+            return await _context.Postulations
+                .Where(p => p.OfferId == offerId)
+                .Include(p => p.Status)        
+                .ToListAsync();
+        }
+
+
     }
 }
