@@ -90,5 +90,19 @@ namespace TalentoLocal.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<int> CountByOffer(int offerId)
+        {
+            return await _context.Postulations
+                .Where(p => p.OfferId == offerId)
+                .CountAsync();
+        }
+
+        public async Task<int> CountByOfferAndStatus(int offerId, string statusName)
+        {
+            return await _context.Postulations
+                .Where(p => p.OfferId == offerId && p.Status.Name == statusName)
+                .CountAsync();
+        }
+
     }
 }
