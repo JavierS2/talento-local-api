@@ -1,3 +1,5 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using TalentoLocal.Models;
 using TalentoLocal.Repositories;
@@ -55,10 +57,26 @@ builder.Services.AddScoped<IPostulationRepository, PostulationRepository>();
 builder.Services.AddScoped<IPostulationStatusRepository, PostulationStatusRepository>();
 builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 
+builder.Services.AddHealthChecks()
+    .AddSqlServer(builder.Configuration.GetConnectionString("AzureSqlConnection")!);
+
+// ---- HealthChecks UI ----
+builder.Services.AddHealthChecksUI(options =>
+{
+    options.SetEvaluationTimeInSeconds(10); // cada 10s revisa el health
+    options.MaximumHistoryEntriesPerEndpoint(60); // historial
+    options.AddHealthCheckEndpoint("API TalentoLocal", "/health"); // apunta a tu health
+})
+.AddInMemoryStorage();
+
+
+
 var app = builder.Build();
 
     app.UseSwagger();
     app.UseSwaggerUI();
+
+
 
 
 app.UseHttpsRedirection();
@@ -66,5 +84,16 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+app.MapHealthChecksUI(options =>
+{
+    options.UIPath = "/health-ui";           // URL del dashboard
+    options.ApiPath = "/health-ui-api";      // API interna de la UI
+});
 
 app.Run();
