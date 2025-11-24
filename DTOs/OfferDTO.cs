@@ -92,4 +92,11 @@ namespace TalentoLocal.DTOs
         float? Rating,
         string CategoryName
     );
+
+    public record OfferPostulationStatsDTO(
+         int TotalPostulations,
+         int ReviewingCount,
+         int AcceptedCount
+    );
+
 }

@@ -163,5 +163,32 @@ namespace TalentoLocal.Controllers
             return Ok(offers);
         }
 
+        [HttpGet("{offerId}/postulation-stats")]
+        public async Task<IActionResult> GetPostulationStats(int offerId)
+        {
+            try
+            {
+                // Validación 1: obtener la oferta (puede lanzar ArgumentException o KeyNotFoundException)
+                var offer = await _service.GetByIdAsync(offerId);
+
+                // Validación 2: obtener estadísticas
+                var stats = await _service.GetPostulationStats(offerId);
+
+                return Ok(stats);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ocurrió un error al obtener las estadísticas de la oferta." });
+            }
+        }
+
     }
 }

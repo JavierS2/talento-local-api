@@ -13,6 +13,7 @@ namespace TalentoLocal.Services.Interfaces
         Task<List<OfferResponseDTO>> GetOffersByUserIdAsync(string userId);
         Task<List<OfferResponseDTO>> GetByCategoryAsync(string category);
         Task<List<OfferResponseDTO>> GetByCompanyIdAsync(string companyId);
+        Task<OfferPostulationStatsDTO> GetPostulationStats(int offerId);
 
     }
 }
