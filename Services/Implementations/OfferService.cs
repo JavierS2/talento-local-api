@@ -6,7 +6,7 @@ using TalentoLocal.Models;
 using TalentoLocal.Repositories.Implementations;
 using TalentoLocal.Repositories.Interfaces;
 using TalentoLocal.Services.Interfaces;
-
+// PRUEBA PIPELINE 24/11/2025
 namespace TalentoLocal.Services.Implementations
 {
     public class OfferService : IOfferService
